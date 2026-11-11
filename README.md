@@ -17,4 +17,4 @@ Add an **Embed** element (Type: Code) and paste:
 
 ## Marketplaces
 
-Store tiles with platform logos, rarity chips, synced/separate inventory badges (hover tooltips on desktop, a note on phone) and a rarity guide. Store links, rarities and copy are near the top of the `HTML` template in `Marketplaces/embed.js`.
+Store tiles with platform logos and rarity chips, grouped into "Synced inventory" and "Separate inventory" frames, plus a rarity guide. Set `--bg` at the top of the CSS to your Carrd page background. Store links, rarities and copy are near the top of the `HTML` template in `Marketplaces/embed.js`.
