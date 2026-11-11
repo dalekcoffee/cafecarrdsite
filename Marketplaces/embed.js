@@ -33,9 +33,10 @@
 .tpc-b svg{width:12px;height:12px;flex:none}
 .tpc-bs{color:var(--g);border:1px solid rgba(201,169,97,.6)}
 .tpc-bx{color:var(--tx);border:1px solid rgba(239,231,214,.35)}
-.tpc-tip{display:none;position:absolute;left:0;bottom:calc(100% + 10px);width:270px;padding:12px 14px;z-index:5;background:var(--ph);border:1px solid var(--g);border-radius:6px;font:400 13px/1.5 Inter,sans-serif;color:var(--tx)}
+.tpc-tip{visibility:hidden;opacity:0;transition:opacity .15s ease 1s,visibility 0s linear 1.15s;position:absolute;left:0;bottom:calc(100% + 10px);width:270px;padding:12px 14px;z-index:5;background:var(--ph);border:1px solid var(--g);border-radius:6px;font:400 13px/1.5 Inter,sans-serif;color:var(--tx)}
 .tpc-tip:after{content:"";position:absolute;left:18px;bottom:-5px;width:8px;height:8px;background:var(--ph);border-right:1px solid var(--g);border-bottom:1px solid var(--g);transform:rotate(45deg)}
-.tpc-t:hover .tpc-tip,.tpc-t:focus-visible .tpc-tip{display:block}
+.tpc-tip:before{content:"";position:absolute;left:0;right:0;top:100%;height:12px}
+.tpc-s:hover .tpc-tip,.tpc-t:focus-visible .tpc-tip{visibility:visible;opacity:1;transition-delay:0s}
 .tpc-g{margin-top:auto;padding-top:12px;font:600 14px Inter,sans-serif;color:var(--g)}
 .tpc-no{display:none}
 @media (max-width:700px){
