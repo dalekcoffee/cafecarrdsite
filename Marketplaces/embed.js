@@ -27,7 +27,19 @@
 .tpc-m{display:flex;flex-direction:column;gap:6px}
 .tpc-n{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .tpc-d{display:flex;flex-wrap:wrap;gap:6px}.tpc-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.tpc-r{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:4px;background:rgba(201,169,97,.12);color:var(--gl);font:600 12px/1 Inter,sans-serif;letter-spacing:.04em}
-.tpc-lg{margin:28px auto 0;max-width:900px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px 24px;font-size:13px;line-height:1.45;color:var(--mu)}.tpc-lg h3{grid-column:1/-1;margin:0 0 4px;font:600 11px/1 Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--g)}.tpc-lg div b{color:var(--tx);margin-right:6px}
+.tpc-lg{margin:40px auto 0;max-width:960px;display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px;line-height:1.45;color:var(--mu)}
+.tpc-lg h3{grid-column:1/-1;margin:0;text-align:center;font:600 11px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--g)}
+.tpc-lc{padding:20px 22px;border:1px solid rgba(201,169,97,.25);border-radius:6px;background:rgba(201,169,97,.03)}
+.tpc-lh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 12px;margin-bottom:14px}
+.tpc-lh span{font-family:'EB Garamond',Georgia,serif;font-weight:600;font-size:20px;color:var(--g)}
+.tpc-lh em{font-style:normal;font-size:12px;color:var(--mu)}
+.tpc-ll{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tpc-ll li{display:flex;flex-direction:column;align-items:flex-start;gap:6px;color:var(--tx)}
+.tpc-lw{grid-template-columns:1fr;gap:12px}
+.tpc-lw li{flex-direction:row;align-items:center;gap:10px;color:var(--mu)}
+.tpc-rg{display:inline-flex;flex-wrap:wrap;gap:4px;flex:none}
+.tpc-la{display:flex;justify-content:space-between;margin-top:12px;padding-top:8px;border-top:1px solid rgba(201,169,97,.25);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mu);position:relative}
+.tpc-la:after{content:"";position:absolute;right:0;top:-4px;width:7px;height:7px;border-top:1px solid rgba(201,169,97,.6);border-right:1px solid rgba(201,169,97,.6);transform:rotate(45deg)}
 .tpc-s{position:relative;align-self:flex-start}
 .tpc-b{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;font:600 11px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase}
 .tpc-b svg{width:12px;height:12px;flex:none}
@@ -47,7 +59,7 @@
 .tpc-p{grid-area:p;height:44px;width:84px;margin:0;align-self:center;justify-content:flex-start}
 .tpc-p svg{height:auto;max-height:30px;max-width:84px}
 .tpc-m{grid-area:m;align-self:end;min-width:0}
-.tpc-d{gap:4px}.tpc-r{height:20px;padding:0 6px;font-size:11px}.tpc-lg{grid-template-columns:1fr 1fr;gap:6px 14px;font-size:12px;margin-top:18px}
+.tpc-d{gap:4px}.tpc-r{height:20px;padding:0 6px;font-size:11px}.tpc-lg{grid-template-columns:1fr;gap:10px;font-size:12px;margin-top:22px}.tpc-lc{padding:14px}.tpc-lh span{font-size:18px}.tpc-ll{gap:6px}.tpc-lw{gap:10px}.tpc-lw li{align-items:flex-start;flex-direction:column;gap:5px}
 .tpc-s{grid-area:s;align-self:start}
 .tpc-g{grid-area:g}
 .tpc-b{height:22px;padding:0 8px;font-size:10px}
@@ -60,7 +72,7 @@
 `;
 
   var HTML = `
-<p class="tpc-sy">eBay, CardTrader and CardNexus share one live inventory. Mercari and TCGplayer are stocked separately.</p>
+<p class="tpc-sy">eBay, CardTrader and CardNexus share one live inventory.<br>Mercari and TCGplayer are stocked separately.</p>
 <div class="tpc-gr">
 <a class="tpc-t tpc-c3" href="https://www.mercari.com/u/thepalcafe/" target="_blank" rel="noopener noreferrer">
 <span class="tpc-p"><svg aria-hidden="true" focusable="false" viewBox="0 0 105 24" fill="none"><g><path d="M 7.1 7.5L 11.0 0L 14.1 0L 14.1 13.8L 11.0 13.8L 11.0 5.9L 11.0 5.9L 8.0 11.3L 6.0 11.3L 3.1 5.9L 3.0 5.9L 3.0 13.8L 0 13.8L 0 0L 3.1 0L 7.0 7.5L 7.1 7.5Z" transform="translate(0.0 6.8)" fill="#5356EE"></path><path d="M 10.2 13.8L 10.2 11.0L 3.0 11.0L 3.0 8.4L 9.8 8.4L 9.8 5.6L 3.0 5.6L 3.0 2.8L 10.2 2.8L 10.2 0L 0 0L 0 13.8L 10.2 13.8Z" transform="translate(19.6 9.3)" fill="#5356EE"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M 9.5 1.2C 10.5 2.0 11.0 3.1 11.0 4.5C 11.0 6.3 10.0 8.0 8.3 8.8L 11.4 13.8L 7.9 13.8L 5.2 9.4L 3.0 9.4L 3.0 13.8L 0 13.8L 0 0L 5.7 0C 7.2 0 8.5 0.4 9.5 1.2ZM 5.2 2.8L 3.0 2.8L 3.0 6.6L 5.2 6.6C 7.0 6.6 7.9 5.9 7.9 4.7C 7.9 3.4 7.1 2.8 5.2 2.8Z" transform="translate(35.1 6.8)" fill="#5356EE"></path><path d="M 10.8 9.5C 9.9 10.7 8.7 11.4 7.2 11.4C 6.1 11.4 5.1 11.0 4.3 10.2C 3.5 9.5 3.1 8.4 3.1 7.1C 3.1 5.8 3.5 4.7 4.3 4.0C 5.0 3.2 6.0 2.8 7.0 2.8C 8.5 2.8 9.8 3.5 10.6 4.7L 10.7 4.7L 12.7 2.6L 12.7 2.6C 11.3 0.8 9.4 0 7.2 0C 5.1 0 3.4 0.6 2.0 1.9C 0.7 3.2 0 5.0 0 7.1C 0 9.3 0.6 11.0 2.0 12.3C 3.4 13.6 5.2 14.3 7.3 14.3C 9.6 14.3 11.5 13.4 12.9 11.7L 12.9 11.6L 10.9 9.4L 10.8 9.5Z" transform="translate(50.2 9.0)" fill="#5356EE"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M 5.4 0L 8.2 0L 8.2 0.0L 13.6 13.8L 10.5 13.8L 9.4 11.3L 4.1 11.3L 3.1 13.8L 0 13.8L 0.0 13.7L 5.4 0ZM 5.1 8.6L 8.5 8.6L 6.8 4.2L 5.1 8.6Z" transform="translate(65.9 6.8)" fill="#5356EE"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M 9.5 1.2C 10.5 2.0 11.0 3.1 11.0 4.5C 11.0 6.3 10.0 8.0 8.3 8.8L 11.4 13.8L 7.9 13.8L 5.2 9.4L 3.0 9.4L 3.0 13.8L 0 13.8L 0 0L 5.7 0C 7.2 0 8.5 0.4 9.5 1.2ZM 5.2 2.8L 3.0 2.8L 3.0 6.6L 5.2 6.6C 7.0 6.6 7.9 5.9 7.9 4.7C 7.9 3.4 7.1 2.8 5.2 2.8Z" transform="translate(83.6 9.3)" fill="#5356EE"></path><g transform="translate(99.6 8.0)"><path d="M 0 0L 3.0 0L 3.0 12.6L 0 12.6L 0 0Z" fill="#5356EE"></path></g></g><g><path d="M 0 0L 3.6 0L 3.6 3.6L 0 3.6L 0 0Z" transform="matrix(0.3 -0.9 0.9 0.3 99.3 3.9)" fill="#5356EE"></path></g></svg></span>
@@ -94,8 +106,24 @@
 </a>
 </div>
 <div class="tpc-lg"><h3>Rarity guide</h3>
-<div><b>C</b>Common</div><div><b>U</b>Uncommon</div><div><b>R</b>Rare</div><div><b>RR</b>Double Rare</div>
-<div><b>TSR</b>Trial Deck Super Rare</div><div><b>SR &middot; OSR &middot; SP &middot; SSP</b>Special parallel versions, hardest to pull</div></div>
+<div class="tpc-lc">
+<div class="tpc-lh"><span>Base rarities</span><em>eBay &middot; TCGplayer &middot; CardTrader &middot; CardNexus</em></div>
+<ol class="tpc-ll">
+<li><span class="tpc-r">C</span>Common</li>
+<li><span class="tpc-r">U</span>Uncommon</li>
+<li><span class="tpc-r">R</span>Rare</li>
+<li><span class="tpc-r">RR</span>Double Rare</li>
+</ol>
+<div class="tpc-la" aria-hidden="true"><span>Easier to find</span><span>Harder to find</span></div>
+</div>
+<div class="tpc-lc">
+<div class="tpc-lh"><span>Special &amp; parallels</span><em>Mercari</em></div>
+<ul class="tpc-ll tpc-lw">
+<li><span class="tpc-r">TSR</span>Trial Deck Super Rare, one guaranteed in each trial deck</li>
+<li><span class="tpc-rg"><span class="tpc-r">SR</span><span class="tpc-r">OSR</span><span class="tpc-r">SP</span><span class="tpc-r">SSP</span></span>Parallel versions of booster cards, the chase pulls of each set</li>
+</ul>
+</div>
+</div>
 <p class="tpc-no"><b>Synced</b> (eBay, CardTrader, CardNexus): a sale on one removes the card from the others automatically.<br><b>Separate</b>: Mercari has no inventory integrations; our TCGplayer account is too new for them.</p>
 `;
 
