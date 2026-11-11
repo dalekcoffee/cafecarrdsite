@@ -32,7 +32,8 @@
 .tpc-p svg{height:34px;width:auto;max-width:180px;display:block}
 .tpc-m{display:flex;flex-direction:column;gap:6px}
 .tpc-n{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.tpc-d{display:flex;flex-wrap:wrap;gap:6px}.tpc-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.tpc-r{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:4px;background:rgba(201,169,97,.12);color:var(--gl);font:600 12px/1 Inter,sans-serif;letter-spacing:.04em}
+.tpc-d{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;margin-top:4px}.tpc-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.tpc-r{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 6px;border-radius:6px;background:rgba(201,169,97,.12);border:1px solid rgba(201,169,97,.22);color:var(--gl);font:600 15px/1 Inter,sans-serif;letter-spacing:.04em}
+.tpc-ll .tpc-r,.tpc-rg .tpc-r{height:26px;padding:0 9px;font-size:12px;border-radius:4px}
 .tpc-lg{margin:40px auto 0;max-width:960px;display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px;line-height:1.45;color:var(--mu)}
 .tpc-lg h3{grid-column:1/-1;margin:0;text-align:center;font:600 11px/1 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--g)}
 .tpc-lc{padding:20px 22px;border:1px solid rgba(201,169,97,.25);border-radius:6px;background:rgba(201,169,97,.03)}
@@ -54,7 +55,7 @@
 .tpc-p{grid-area:p;height:44px;width:84px;margin:0;align-self:center;justify-content:flex-start}
 .tpc-p svg{height:auto;max-height:30px;max-width:84px}
 .tpc-m{grid-area:m;align-self:center;min-width:0}
-.tpc-d{gap:4px}.tpc-r{height:20px;padding:0 6px;font-size:11px}.tpc-lg{grid-template-columns:1fr;gap:10px;font-size:12px;margin-top:22px}.tpc-lc{padding:14px}.tpc-lh span{font-size:18px}.tpc-ll{gap:6px}.tpc-lw{gap:10px}.tpc-lw li{align-items:flex-start;flex-direction:column;gap:5px}
+.tpc-d{gap:5px;margin:0}.tpc-r{height:30px;padding:0 2px;font-size:13px}.tpc-ll .tpc-r,.tpc-rg .tpc-r{height:22px;padding:0 6px;font-size:11px}.tpc-lg{grid-template-columns:1fr;gap:10px;font-size:12px;margin-top:22px}.tpc-lc{padding:14px}.tpc-lh span{font-size:18px}.tpc-ll{gap:6px}.tpc-lw{gap:10px}.tpc-lw li{align-items:flex-start;flex-direction:column;gap:5px}
 .tpc-g{grid-area:g}
 .tpc-g{margin:0;padding:0;font-size:0;align-self:center}
 .tpc-g:after{content:"\\2192";font-size:18px}
