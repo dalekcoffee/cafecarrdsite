@@ -18,6 +18,7 @@
 .tpc{--bg:#14110c;--g:#c9a961;--gl:#e3c893;--pn:#1c1812;--ph:#221d15;--tx:#efe7d6;--mu:#a39a86;font-family:Inter,system-ui,sans-serif;color:var(--tx);max-width:1160px;margin:0 auto;text-align:left;container:tpc / inline-size}
 .tpc *{box-sizing:border-box}
 .tpc-gp{position:relative;margin:0 0 30px;padding:30px 22px 22px;border:1px solid rgba(201,169,97,.5);border-radius:10px}
+.tpc-gp:last-child{margin-bottom:0}
 .tpc-gx{max-width:780px;margin-left:auto;margin-right:auto;border-style:dashed;border-color:rgba(239,231,214,.3)}
 .tpc-gh{position:absolute;top:0;left:18px;transform:translateY(-50%);margin:0;padding:0 12px;display:flex;align-items:center;gap:8px;background:var(--bg,#14110c);font-family:'EB Garamond',Georgia,serif;font-weight:600;font-size:22px;line-height:1.2;color:var(--g)}
 .tpc-gh svg{width:18px;height:18px;flex:none}
@@ -75,13 +76,14 @@
 }
 }
 @container tpc (max-width:760px){
-.tpc-gp{padding:26px 14px 14px;margin-bottom:24px}.tpc-gh{font-size:20px;left:12px;padding:0 10px}.tpc-why{font-size:12px;margin-bottom:12px}
-.tpc-gr{gap:10px}
-.tpc-t{min-width:0;min-height:0;padding:16px 14px;gap:8px}
-.tpc-p{align-self:stretch;height:40px;margin-bottom:2px}
-.tpc-p svg{height:auto;max-height:30px;max-width:100%}
-.tpc-d{gap:5px;--rf:13px}.tpc-r{height:28px;padding:0 2px;letter-spacing:.02em}
-.tpc-g{padding-top:8px;font-size:13px;white-space:nowrap}
+.tpc-gp{padding:22px 12px 12px;margin-bottom:20px}.tpc-gh{font-size:19px;left:12px;padding:0 10px}.tpc-why{font-size:12px;margin-bottom:10px}
+.tpc-gr{gap:8px}
+.tpc-t{min-width:0;min-height:0;padding:10px 12px;gap:6px}
+.tpc-p{align-self:stretch;height:26px;margin:0;padding-right:22px}
+.tpc-p svg{height:auto;max-height:24px;max-width:100%}
+.tpc-d{gap:4px;margin:0;--rf:12px}.tpc-r{height:24px;padding:0 2px;letter-spacing:.02em;border-radius:5px}
+.tpc-g{position:absolute;top:10px;right:12px;margin:0;padding:0;font-size:0;line-height:26px}
+.tpc-g:after{content:"\\2192";font-size:16px}
 .tpc-lg{grid-template-columns:1fr;gap:10px;margin-top:22px}
 }
 @container tpc (max-width:520px){
@@ -181,6 +183,9 @@
     }
     root.className = 'tpc';
     root.innerHTML = HTML;
+    // The rarity guide now lives in the Inventory embed (one lean row above the search). data-guide="on" keeps the full guide here.
+    var guide = root.querySelector('.tpc-lg');
+    if (guide && root.getAttribute('data-guide') !== 'on') guide.parentNode.removeChild(guide);
     live(root);
   }
 
