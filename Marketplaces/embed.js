@@ -98,6 +98,7 @@
 .tpc-g{grid-area:g;position:static;margin:0;padding:0;font-size:0;line-height:1;align-self:center}
 .tpc-g:after{content:"\\2192";font-size:15px}
 }
+.tpc-fade{opacity:0}.tpc-fade.tpc-in{opacity:1;transition:opacity 1s ease 1s}
 `;
 
   var HTML = `
@@ -161,6 +162,21 @@
 
   var script = document.currentScript;
 
+  // Fade in like the rest of the Carrd page: "On Visible", Fade In, 1 s long after a 1 s delay, once.
+  // Nothing is hidden when the reader asks for reduced motion or the browser cannot watch for visibility.
+  function fadeIn(root) {
+    try {
+      if (!window.IntersectionObserver || !window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      root.classList.add('tpc-fade');
+      var io = new IntersectionObserver(function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].isIntersecting) { root.classList.add('tpc-in'); io.disconnect(); return; }
+        }
+      }, { rootMargin: '0px 0px -12% 0px' });
+      io.observe(root);
+    } catch (e) { root.classList.remove('tpc-fade'); }
+  }
+
   function mount() {
     // Fonts + styles, injected once per page
     if (!document.getElementById('tpc-fonts')) {
@@ -182,6 +198,7 @@
       else document.body.appendChild(root);
     }
     root.className = 'tpc';
+    fadeIn(root);
     root.innerHTML = HTML;
     // The rarity guide now lives in the Inventory embed (one lean row above the search). data-guide="on" keeps the full guide here.
     var guide = root.querySelector('.tpc-lg');

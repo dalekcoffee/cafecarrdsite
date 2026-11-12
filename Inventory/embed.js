@@ -113,6 +113,7 @@
 .tpci-by{gap:6px}.tpci-by a{flex:1 1 calc(50% - 3px);min-width:0;min-height:32px;padding:4px 8px;gap:6px;font-size:13px}.tpci-lo svg{height:13px;max-width:58px}
 .tpci-gd{gap:5px 10px;margin-bottom:10px;font-size:11px}
 }
+.tpci-fade{opacity:0}.tpci-fade.tpci-in{opacity:1;transition:opacity 1s ease 1s}
 `;
 
   var script = document.currentScript;
@@ -194,6 +195,22 @@
 
   function rarityRank(r) { var i = RARITIES.indexOf(r); return r ? i : -2; }
 
+
+  // Fade in like the rest of the Carrd page: "On Visible", Fade In, 1 s long after a 1 s delay, once.
+  // Nothing is hidden when the reader asks for reduced motion or the browser cannot watch for visibility.
+  function fadeIn(root) {
+    try {
+      if (!window.IntersectionObserver || !window.matchMedia || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      root.classList.add('tpci-fade');
+      var io = new IntersectionObserver(function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].isIntersecting) { root.classList.add('tpci-in'); io.disconnect(); return; }
+        }
+      }, { rootMargin: '0px 0px -12% 0px' });
+      io.observe(root);
+    } catch (e) { root.classList.remove('tpci-fade'); }
+  }
+
   function mount() {
     if (!document.getElementById('tpc-fonts')) {
       var l = document.createElement('link');
@@ -217,6 +234,7 @@
     root.setAttribute('data-tpci', '1');
     var SRC = root.getAttribute('data-src') || (script && script.getAttribute('data-src')) || '';
     root.className = 'tpci';
+    fadeIn(root);
 
     var frame = el('section', 'tpci-fr');
     frame.setAttribute('aria-labelledby', 'tpci-h');
