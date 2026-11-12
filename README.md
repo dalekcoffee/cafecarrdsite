@@ -48,3 +48,8 @@ number of chips, and they only wrap when there are too many to read.
 The rarity guide is one lean row at the top of the Inventory embed, above the search, and lists only the
 rarities in stock. The Marketplaces embed no longer shows the big guide; add `data-guide="on"` to its
 `tpc-markets` div to bring it back there.
+
+### Fade in
+
+Both embeds fade in the way the rest of the Carrd page does (Carrd's "On Visible" animation: Fade In, 1 s
+long after a 1 s delay, not replayed). Readers who ask for reduced motion see the embeds at once.
