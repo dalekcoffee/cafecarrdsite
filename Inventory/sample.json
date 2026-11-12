@@ -1,0 +1,966 @@
+{
+ "v": 1,
+ "at": 1794442058803,
+ "cards": [
+  {
+   "code": "EBP01-003",
+   "name": "Lamball",
+   "rarity": "C",
+   "colour": "Red",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 49,
+     "url": "https://www.ebay.com/itm/sample0"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-006",
+   "name": "Cattiva",
+   "rarity": "U",
+   "colour": "Purple",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "mercari",
+     "cents": 186,
+     "url": "https://www.mercari.com/us/item/sample1"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 277,
+     "url": "https://www.cardtrader.com/en-US/cards/sample1"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-009",
+   "name": "Chikipi",
+   "rarity": "R",
+   "colour": "Blue",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "tcgplayer",
+     "cents": 323,
+     "url": "https://www.tcgplayer.com/product/sample2"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 414,
+     "url": "https://cardnexus.com/en/cards/sample2"
+    },
+    {
+     "store": "mercari",
+     "cents": 505,
+     "url": "https://www.mercari.com/us/item/sample2"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-012",
+   "name": "Foxparks",
+   "rarity": "RR",
+   "colour": "Colorless",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "cardtrader",
+     "cents": 460,
+     "url": "https://www.cardtrader.com/en-US/cards/sample3"
+    },
+    {
+     "store": "ebay",
+     "cents": 551,
+     "url": "https://www.ebay.com/itm/sample3"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 642,
+     "url": "https://www.tcgplayer.com/product/sample3"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 733,
+     "url": "https://cardnexus.com/en/cards/sample3"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-015",
+   "name": "Pengullet",
+   "rarity": "SR",
+   "colour": "Green",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "cardnexus",
+     "cents": 597,
+     "url": "https://cardnexus.com/en/cards/sample4"
+    },
+    {
+     "store": "mercari",
+     "cents": 688,
+     "url": "https://www.mercari.com/us/item/sample4"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 779,
+     "url": "https://www.cardtrader.com/en-US/cards/sample4"
+    },
+    {
+     "store": "ebay",
+     "cents": 870,
+     "url": "https://www.ebay.com/itm/sample4"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 961,
+     "url": "https://www.tcgplayer.com/product/sample4"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-018",
+   "name": "Depresso",
+   "rarity": "OSR",
+   "colour": "Red",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 734,
+     "url": "https://www.ebay.com/itm/sample5"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-021",
+   "name": "Tanzee",
+   "rarity": "SP",
+   "colour": "Purple",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "mercari",
+     "cents": 871,
+     "url": "https://www.mercari.com/us/item/sample6"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 962,
+     "url": "https://www.cardtrader.com/en-US/cards/sample6"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-024",
+   "name": "Rooby",
+   "rarity": "SSP",
+   "colour": "Blue",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "tcgplayer",
+     "cents": 1008,
+     "url": "https://www.tcgplayer.com/product/sample7"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 1099,
+     "url": "https://cardnexus.com/en/cards/sample7"
+    },
+    {
+     "store": "mercari",
+     "cents": 1190,
+     "url": "https://www.mercari.com/us/item/sample7"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-027",
+   "name": "Direhowl",
+   "rarity": "TSR",
+   "colour": "Colorless",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "cardtrader",
+     "cents": 1145,
+     "url": "https://www.cardtrader.com/en-US/cards/sample8"
+    },
+    {
+     "store": "ebay",
+     "cents": 1236,
+     "url": "https://www.ebay.com/itm/sample8"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 1327,
+     "url": "https://www.tcgplayer.com/product/sample8"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 1418,
+     "url": "https://cardnexus.com/en/cards/sample8"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-030",
+   "name": "Jolthog",
+   "rarity": "C",
+   "colour": "Green",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "cardnexus",
+     "cents": 1282,
+     "url": "https://cardnexus.com/en/cards/sample9"
+    },
+    {
+     "store": "mercari",
+     "cents": 1373,
+     "url": "https://www.mercari.com/us/item/sample9"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 1464,
+     "url": "https://www.cardtrader.com/en-US/cards/sample9"
+    },
+    {
+     "store": "ebay",
+     "cents": 1555,
+     "url": "https://www.ebay.com/itm/sample9"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 1646,
+     "url": "https://www.tcgplayer.com/product/sample9"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-033",
+   "name": "Lamball Ex",
+   "rarity": "U",
+   "colour": "Red",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 1419,
+     "url": "https://www.ebay.com/itm/sample10"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-036",
+   "name": "Cattiva Ex",
+   "rarity": "R",
+   "colour": "Purple",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "mercari",
+     "cents": 1556,
+     "url": "https://www.mercari.com/us/item/sample11"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 1647,
+     "url": "https://www.cardtrader.com/en-US/cards/sample11"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-039",
+   "name": "Chikipi Ex",
+   "rarity": "RR",
+   "colour": "Blue",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "tcgplayer",
+     "cents": 1693,
+     "url": "https://www.tcgplayer.com/product/sample12"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 1784,
+     "url": "https://cardnexus.com/en/cards/sample12"
+    },
+    {
+     "store": "mercari",
+     "cents": 1875,
+     "url": "https://www.mercari.com/us/item/sample12"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-042",
+   "name": "Foxparks Ex",
+   "rarity": "SR",
+   "colour": "Colorless",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "cardtrader",
+     "cents": 1830,
+     "url": "https://www.cardtrader.com/en-US/cards/sample13"
+    },
+    {
+     "store": "ebay",
+     "cents": 1921,
+     "url": "https://www.ebay.com/itm/sample13"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 2012,
+     "url": "https://www.tcgplayer.com/product/sample13"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 2103,
+     "url": "https://cardnexus.com/en/cards/sample13"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-045",
+   "name": "Pengullet Ex",
+   "rarity": "OSR",
+   "colour": "Green",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "cardnexus",
+     "cents": 1967,
+     "url": "https://cardnexus.com/en/cards/sample14"
+    },
+    {
+     "store": "mercari",
+     "cents": 2058,
+     "url": "https://www.mercari.com/us/item/sample14"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 2149,
+     "url": "https://www.cardtrader.com/en-US/cards/sample14"
+    },
+    {
+     "store": "ebay",
+     "cents": 2240,
+     "url": "https://www.ebay.com/itm/sample14"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 2331,
+     "url": "https://www.tcgplayer.com/product/sample14"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-048",
+   "name": "Depresso Ex",
+   "rarity": "SP",
+   "colour": "Red",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 2104,
+     "url": "https://www.ebay.com/itm/sample15"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-051",
+   "name": "Tanzee Ex",
+   "rarity": "SSP",
+   "colour": "Purple",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "mercari",
+     "cents": 2241,
+     "url": "https://www.mercari.com/us/item/sample16"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 2332,
+     "url": "https://www.cardtrader.com/en-US/cards/sample16"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-054",
+   "name": "Rooby Ex",
+   "rarity": "TSR",
+   "colour": "Blue",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "tcgplayer",
+     "cents": 2378,
+     "url": "https://www.tcgplayer.com/product/sample17"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 69,
+     "url": "https://cardnexus.com/en/cards/sample17"
+    },
+    {
+     "store": "mercari",
+     "cents": 160,
+     "url": "https://www.mercari.com/us/item/sample17"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-057",
+   "name": "Direhowl Ex",
+   "rarity": "C",
+   "colour": "Colorless",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "cardtrader",
+     "cents": 115,
+     "url": "https://www.cardtrader.com/en-US/cards/sample18"
+    },
+    {
+     "store": "ebay",
+     "cents": 206,
+     "url": "https://www.ebay.com/itm/sample18"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 297,
+     "url": "https://www.tcgplayer.com/product/sample18"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 388,
+     "url": "https://cardnexus.com/en/cards/sample18"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-060",
+   "name": "Jolthog Ex",
+   "rarity": "U",
+   "colour": "Green",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "cardnexus",
+     "cents": 252,
+     "url": "https://cardnexus.com/en/cards/sample19"
+    },
+    {
+     "store": "mercari",
+     "cents": 343,
+     "url": "https://www.mercari.com/us/item/sample19"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 434,
+     "url": "https://www.cardtrader.com/en-US/cards/sample19"
+    },
+    {
+     "store": "ebay",
+     "cents": 525,
+     "url": "https://www.ebay.com/itm/sample19"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 616,
+     "url": "https://www.tcgplayer.com/product/sample19"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-063",
+   "name": "Lamball Alt",
+   "rarity": "R",
+   "colour": "Red",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 389,
+     "url": "https://www.ebay.com/itm/sample20"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-066",
+   "name": "Cattiva Alt",
+   "rarity": "RR",
+   "colour": "Purple",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "mercari",
+     "cents": 526,
+     "url": "https://www.mercari.com/us/item/sample21"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 617,
+     "url": "https://www.cardtrader.com/en-US/cards/sample21"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-069",
+   "name": "Chikipi Alt",
+   "rarity": "SR",
+   "colour": "Blue",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "tcgplayer",
+     "cents": 663,
+     "url": "https://www.tcgplayer.com/product/sample22"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 754,
+     "url": "https://cardnexus.com/en/cards/sample22"
+    },
+    {
+     "store": "mercari",
+     "cents": 845,
+     "url": "https://www.mercari.com/us/item/sample22"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-072",
+   "name": "Foxparks Alt",
+   "rarity": "OSR",
+   "colour": "Colorless",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "cardtrader",
+     "cents": 800,
+     "url": "https://www.cardtrader.com/en-US/cards/sample23"
+    },
+    {
+     "store": "ebay",
+     "cents": 891,
+     "url": "https://www.ebay.com/itm/sample23"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 982,
+     "url": "https://www.tcgplayer.com/product/sample23"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 1073,
+     "url": "https://cardnexus.com/en/cards/sample23"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-075",
+   "name": "Pengullet Alt",
+   "rarity": "SP",
+   "colour": "Green",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "cardnexus",
+     "cents": 937,
+     "url": "https://cardnexus.com/en/cards/sample24"
+    },
+    {
+     "store": "mercari",
+     "cents": 1028,
+     "url": "https://www.mercari.com/us/item/sample24"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 1119,
+     "url": "https://www.cardtrader.com/en-US/cards/sample24"
+    },
+    {
+     "store": "ebay",
+     "cents": 1210,
+     "url": "https://www.ebay.com/itm/sample24"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 1301,
+     "url": "https://www.tcgplayer.com/product/sample24"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-078",
+   "name": "Depresso Alt",
+   "rarity": "SSP",
+   "colour": "Red",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 1074,
+     "url": "https://www.ebay.com/itm/sample25"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-081",
+   "name": "Tanzee Alt",
+   "rarity": "TSR",
+   "colour": "Purple",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "mercari",
+     "cents": 1211,
+     "url": "https://www.mercari.com/us/item/sample26"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 1302,
+     "url": "https://www.cardtrader.com/en-US/cards/sample26"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-084",
+   "name": "Rooby Alt",
+   "rarity": "C",
+   "colour": "Blue",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "tcgplayer",
+     "cents": 1348,
+     "url": "https://www.tcgplayer.com/product/sample27"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 1439,
+     "url": "https://cardnexus.com/en/cards/sample27"
+    },
+    {
+     "store": "mercari",
+     "cents": 1530,
+     "url": "https://www.mercari.com/us/item/sample27"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-087",
+   "name": "Direhowl Alt",
+   "rarity": "U",
+   "colour": "Colorless",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "cardtrader",
+     "cents": 1485,
+     "url": "https://www.cardtrader.com/en-US/cards/sample28"
+    },
+    {
+     "store": "ebay",
+     "cents": 1576,
+     "url": "https://www.ebay.com/itm/sample28"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 1667,
+     "url": "https://www.tcgplayer.com/product/sample28"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 1758,
+     "url": "https://cardnexus.com/en/cards/sample28"
+    }
+   ]
+  },
+  {
+   "code": "EBP01-090",
+   "name": "Jolthog Alt",
+   "rarity": "R",
+   "colour": "Green",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "cardnexus",
+     "cents": 1622,
+     "url": "https://cardnexus.com/en/cards/sample29"
+    },
+    {
+     "store": "mercari",
+     "cents": 1713,
+     "url": "https://www.mercari.com/us/item/sample29"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 1804,
+     "url": "https://www.cardtrader.com/en-US/cards/sample29"
+    },
+    {
+     "store": "ebay",
+     "cents": 1895,
+     "url": "https://www.ebay.com/itm/sample29"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 1986,
+     "url": "https://www.tcgplayer.com/product/sample29"
+    }
+   ]
+  },
+  {
+   "code": "EBP02-093",
+   "name": "Lamball Promo",
+   "rarity": "RR",
+   "colour": "Red",
+   "set": "EBP02",
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 1759,
+     "url": "https://www.ebay.com/itm/sample30"
+    }
+   ]
+  },
+  {
+   "code": "EBP02-096",
+   "name": "Cattiva Promo",
+   "rarity": "SR",
+   "colour": "Purple",
+   "set": "EBP02",
+   "stores": [
+    {
+     "store": "mercari",
+     "cents": 1896,
+     "url": "https://www.mercari.com/us/item/sample31"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 1987,
+     "url": "https://www.cardtrader.com/en-US/cards/sample31"
+    }
+   ]
+  },
+  {
+   "code": "EBP02-099",
+   "name": "Chikipi Promo",
+   "rarity": "OSR",
+   "colour": "Blue",
+   "set": "EBP02",
+   "stores": [
+    {
+     "store": "tcgplayer",
+     "cents": 2033,
+     "url": "https://www.tcgplayer.com/product/sample32"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 2124,
+     "url": "https://cardnexus.com/en/cards/sample32"
+    },
+    {
+     "store": "mercari",
+     "cents": 2215,
+     "url": "https://www.mercari.com/us/item/sample32"
+    }
+   ]
+  },
+  {
+   "code": "EBP02-102",
+   "name": "Foxparks Promo",
+   "rarity": "SP",
+   "colour": "Colorless",
+   "set": "EBP02",
+   "stores": [
+    {
+     "store": "cardtrader",
+     "cents": 2170,
+     "url": "https://www.cardtrader.com/en-US/cards/sample33"
+    },
+    {
+     "store": "ebay",
+     "cents": 2261,
+     "url": "https://www.ebay.com/itm/sample33"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 2352,
+     "url": "https://www.tcgplayer.com/product/sample33"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 2443,
+     "url": "https://cardnexus.com/en/cards/sample33"
+    }
+   ]
+  },
+  {
+   "code": "EBP02-105",
+   "name": "Pengullet Promo",
+   "rarity": "SSP",
+   "colour": "Green",
+   "set": "EBP02",
+   "stores": [
+    {
+     "store": "cardnexus",
+     "cents": 2307,
+     "url": "https://cardnexus.com/en/cards/sample34"
+    },
+    {
+     "store": "mercari",
+     "cents": 2398,
+     "url": "https://www.mercari.com/us/item/sample34"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 89,
+     "url": "https://www.cardtrader.com/en-US/cards/sample34"
+    },
+    {
+     "store": "ebay",
+     "cents": 180,
+     "url": "https://www.ebay.com/itm/sample34"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 271,
+     "url": "https://www.tcgplayer.com/product/sample34"
+    }
+   ]
+  },
+  {
+   "code": "EBP02-108",
+   "name": "Depresso Promo",
+   "rarity": "TSR",
+   "colour": "Red",
+   "set": "EBP02",
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 2444,
+     "url": "https://www.ebay.com/itm/sample35"
+    }
+   ]
+  },
+  {
+   "code": "EBP02-111",
+   "name": "Tanzee Promo",
+   "rarity": "C",
+   "colour": "Purple",
+   "set": "EBP02",
+   "stores": [
+    {
+     "store": "mercari",
+     "cents": 181,
+     "url": "https://www.mercari.com/us/item/sample36"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 272,
+     "url": "https://www.cardtrader.com/en-US/cards/sample36"
+    }
+   ]
+  },
+  {
+   "code": "EBP02-114",
+   "name": "Rooby Promo",
+   "rarity": "U",
+   "colour": "Blue",
+   "set": "EBP02",
+   "stores": [
+    {
+     "store": "tcgplayer",
+     "cents": 318,
+     "url": "https://www.tcgplayer.com/product/sample37"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 409,
+     "url": "https://cardnexus.com/en/cards/sample37"
+    },
+    {
+     "store": "mercari",
+     "cents": 500,
+     "url": "https://www.mercari.com/us/item/sample37"
+    }
+   ]
+  },
+  {
+   "code": "EBP02-117",
+   "name": "Direhowl Promo",
+   "rarity": "R",
+   "colour": "Colorless",
+   "set": "EBP02",
+   "stores": [
+    {
+     "store": "cardtrader",
+     "cents": 455,
+     "url": "https://www.cardtrader.com/en-US/cards/sample38"
+    },
+    {
+     "store": "ebay",
+     "cents": 546,
+     "url": "https://www.ebay.com/itm/sample38"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 637,
+     "url": "https://www.tcgplayer.com/product/sample38"
+    },
+    {
+     "store": "cardnexus",
+     "cents": 728,
+     "url": "https://cardnexus.com/en/cards/sample38"
+    }
+   ]
+  },
+  {
+   "code": "EBP02-120",
+   "name": "Jolthog Promo",
+   "rarity": "RR",
+   "colour": "Green",
+   "set": "EBP02",
+   "stores": [
+    {
+     "store": "cardnexus",
+     "cents": 592,
+     "url": "https://cardnexus.com/en/cards/sample39"
+    },
+    {
+     "store": "mercari",
+     "cents": 683,
+     "url": "https://www.mercari.com/us/item/sample39"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 774,
+     "url": "https://www.cardtrader.com/en-US/cards/sample39"
+    },
+    {
+     "store": "ebay",
+     "cents": 865,
+     "url": "https://www.ebay.com/itm/sample39"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 956,
+     "url": "https://www.tcgplayer.com/product/sample39"
+    }
+   ]
+  }
+ ]
+}

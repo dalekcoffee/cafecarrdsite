@@ -1,0 +1,369 @@
+/*!
+ * ThePalCafe — Inventory embed
+ * Hosted: https://dalekcoffee.github.io/cafecarrdsite/Inventory/embed.js
+ *
+ * Carrd embed (Type: Code):
+ *   <div id="tpc-inventory" data-src="LIST_ADDRESS"></div>
+ *   <script src="https://dalekcoffee.github.io/cafecarrdsite/Inventory/embed.js"></script>
+ *
+ * The list address is read from data-src on the mount div (fallback: data-src on the script tag); it is never
+ * stored in this file. The mount div is optional: without it the widget is inserted right after the script tag.
+ * Data text only ever goes in through textContent; every store link is re-checked against the store's own domain.
+ */
+(function () {
+  'use strict';
+
+  // --bg (first line of CSS) must match the Carrd page background so the frame title cuts the border cleanly.
+  var FONTS = 'https://fonts.googleapis.com/css2?family=EB+Garamond:wght@600&family=Inter:wght@400;600&display=swap';
+  var ART = 'https://resopal-proxy.dalek.workers.dev/img/';
+  var PAGE = 24;
+  var MAX_CARDS = 5000;
+
+  var STORES = {
+    ebay: ['eBay', 'ebay.com'],
+    mercari: ['Mercari', 'mercari.com'],
+    tcgplayer: ['TCGplayer', 'tcgplayer.com'],
+    cardtrader: ['CardTrader', 'cardtrader.com'],
+    cardnexus: ['CardNexus', 'cardnexus.com']
+  };
+  var ORDER = ['ebay', 'mercari', 'tcgplayer', 'cardtrader', 'cardnexus'];
+  var COLOURS = { Red: '#e06a6a', Blue: '#6aa8e0', Green: '#7cc98a', Purple: '#b38be0', Colorless: '#b9bfd0' };
+  var COLOUR_ORDER = ['Red', 'Blue', 'Green', 'Purple', 'Colorless'];
+  // Same order as the rarity guide on the Marketplaces embed: base rarities, then the special ones (rarest last).
+  var RARITIES = ['C', 'U', 'R', 'RR', 'TSR', 'SR', 'OSR', 'SP', 'SSP'];
+  var SORTS = [
+    ['code', 'Card number'],
+    ['name', 'Name A to Z'],
+    ['colour', 'Colour'],
+    ['rarity', 'Rarity (highest first)'],
+    ['store', 'Store'],
+    ['high', 'Price: high to low'],
+    ['low', 'Price: low to high']
+  ];
+
+  // Platform logos, the same inline SVGs as the Marketplaces embed.
+  var LOGOS = {
+    ebay: `<svg focusable="false" viewBox="0 0 122 48.592"><g><path fill="#F02D2D" d="M24.355 22.759c-.269-5.738-4.412-7.838-8.826-7.813-4.756.026-8.544 2.459-9.183 7.915zM6.234 26.93c.364 5.553 4.208 8.814 9.476 8.785 3.648-.021 6.885-1.524 7.952-4.763l6.306-.035c-1.187 6.568-8.151 8.834-14.145 8.866C4.911 39.844.043 33.865-.002 25.759c-.05-8.927 4.917-14.822 15.765-14.884 8.628-.048 14.978 4.433 15.033 14.291l.01 1.625z"></path><path fill="#0968F6" d="M46.544 35.429c5.688-.032 9.543-4.148 9.508-10.32s-3.947-10.246-9.622-10.214-9.543 4.148-9.509 10.32 3.974 10.245 9.623 10.214zM30.652.029l6.116-.034.085 15.369c2.978-3.588 7.1-4.65 11.167-4.674 6.817-.037 14.412 4.518 14.468 14.454.045 8.29-5.941 14.407-14.422 14.454-4.463.026-8.624-1.545-11.218-4.681a33.237 33.237 0 01-.19 3.731l-5.994.034c.09-1.915.185-4.364.174-6.322z"></path><path fill="#FFBD14" d="M77.282 25.724c-5.548.216-8.985 1.229-8.965 4.883.013 2.365 1.94 4.919 6.7 4.891 6.415-.035 9.826-3.556 9.794-9.289v-.637c-2.252.02-5.039.054-7.529.152zm13.683 7.506c.01 1.778.071 3.538.232 5.1l-5.688.032a33.381 33.381 0 01-.225-3.825c-3.052 3.8-6.708 4.909-11.783 4.938-7.532.042-11.585-3.915-11.611-8.518-.037-6.665 5.434-9.049 14.954-9.318 2.6-.072 5.529-.1 7.945-.116v-.637c-.026-4.463-2.9-6.285-7.854-6.257-3.68.021-6.368 1.561-6.653 4.2l-6.434.035c.645-6.566 7.53-8.269 13.595-8.3 7.263-.04 13.406 2.508 13.448 10.192z"></path><path fill="#92C821" d="M91.939 19.852l-4.5-8.362 7.154-.04 10.589 20.922 10.328-21.02 6.486-.048-18.707 37.251-6.85.039 5.382-10.348-9.887-18.393"></path></g></svg>`,
+    mercari: `<svg focusable="false" viewBox="0 0 105 24" fill="none"><g><path d="M 7.1 7.5L 11.0 0L 14.1 0L 14.1 13.8L 11.0 13.8L 11.0 5.9L 11.0 5.9L 8.0 11.3L 6.0 11.3L 3.1 5.9L 3.0 5.9L 3.0 13.8L 0 13.8L 0 0L 3.1 0L 7.0 7.5L 7.1 7.5Z" transform="translate(0.0 6.8)" fill="#5356EE"></path><path d="M 10.2 13.8L 10.2 11.0L 3.0 11.0L 3.0 8.4L 9.8 8.4L 9.8 5.6L 3.0 5.6L 3.0 2.8L 10.2 2.8L 10.2 0L 0 0L 0 13.8L 10.2 13.8Z" transform="translate(19.6 9.3)" fill="#5356EE"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M 9.5 1.2C 10.5 2.0 11.0 3.1 11.0 4.5C 11.0 6.3 10.0 8.0 8.3 8.8L 11.4 13.8L 7.9 13.8L 5.2 9.4L 3.0 9.4L 3.0 13.8L 0 13.8L 0 0L 5.7 0C 7.2 0 8.5 0.4 9.5 1.2ZM 5.2 2.8L 3.0 2.8L 3.0 6.6L 5.2 6.6C 7.0 6.6 7.9 5.9 7.9 4.7C 7.9 3.4 7.1 2.8 5.2 2.8Z" transform="translate(35.1 6.8)" fill="#5356EE"></path><path d="M 10.8 9.5C 9.9 10.7 8.7 11.4 7.2 11.4C 6.1 11.4 5.1 11.0 4.3 10.2C 3.5 9.5 3.1 8.4 3.1 7.1C 3.1 5.8 3.5 4.7 4.3 4.0C 5.0 3.2 6.0 2.8 7.0 2.8C 8.5 2.8 9.8 3.5 10.6 4.7L 10.7 4.7L 12.7 2.6L 12.7 2.6C 11.3 0.8 9.4 0 7.2 0C 5.1 0 3.4 0.6 2.0 1.9C 0.7 3.2 0 5.0 0 7.1C 0 9.3 0.6 11.0 2.0 12.3C 3.4 13.6 5.2 14.3 7.3 14.3C 9.6 14.3 11.5 13.4 12.9 11.7L 12.9 11.6L 10.9 9.4L 10.8 9.5Z" transform="translate(50.2 9.0)" fill="#5356EE"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M 5.4 0L 8.2 0L 8.2 0.0L 13.6 13.8L 10.5 13.8L 9.4 11.3L 4.1 11.3L 3.1 13.8L 0 13.8L 0.0 13.7L 5.4 0ZM 5.1 8.6L 8.5 8.6L 6.8 4.2L 5.1 8.6Z" transform="translate(65.9 6.8)" fill="#5356EE"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M 9.5 1.2C 10.5 2.0 11.0 3.1 11.0 4.5C 11.0 6.3 10.0 8.0 8.3 8.8L 11.4 13.8L 7.9 13.8L 5.2 9.4L 3.0 9.4L 3.0 13.8L 0 13.8L 0 0L 5.7 0C 7.2 0 8.5 0.4 9.5 1.2ZM 5.2 2.8L 3.0 2.8L 3.0 6.6L 5.2 6.6C 7.0 6.6 7.9 5.9 7.9 4.7C 7.9 3.4 7.1 2.8 5.2 2.8Z" transform="translate(83.6 9.3)" fill="#5356EE"></path><g transform="translate(99.6 8.0)"><path d="M 0 0L 3.0 0L 3.0 12.6L 0 12.6L 0 0Z" fill="#5356EE"></path></g></g><g><path d="M 0 0L 3.6 0L 3.6 3.6L 0 3.6L 0 0Z" transform="matrix(0.3 -0.9 0.9 0.3 99.3 3.9)" fill="#5356EE"></path></g></svg>`,
+    tcgplayer: `<svg focusable="false" viewBox="0 0 801 337" fill="none"><path d="M58.5 239.1H85.9V261.9H58.5V336.4H27.7V261.9H0.3V239.1H58.5ZM153.2 310.4L153.2 310.4C148.4 310.5 142.5 310.6 135.4 310.6C132.2 310.6 129.7 309.9 128.0 308.6C126.2 307.2 125.0 304.8 124.4 301.2C123.7 297.7 123.4 292.7 123.4 286.1C123.4 279.5 123.7 274.4 124.4 270.9C125.1 267.4 126.2 264.9 128.0 263.6C129.7 262.2 132.2 261.5 135.4 261.5C140.0 261.5 143.8 261.5 147.1 261.6C150.3 261.7 153.3 261.7 156.1 261.7C159.0 261.7 162.1 261.7 165.4 261.8L167.7 239.5C164.4 238.5 161.3 237.8 158.4 237.3C155.4 236.8 152.1 236.4 148.5 236.1C144.9 235.8 140.6 235.7 135.5 235.7C124.7 235.7 116.0 237.3 109.5 240.6C103.0 243.8 98.3 249.1 95.4 256.4C92.5 263.8 91.0 273.7 91.0 286.1C91.0 298.5 92.5 308.4 95.4 315.7C98.3 323.0 103.0 328.3 109.5 331.6C116.0 334.8 124.7 336.5 135.5 336.5C143.1 336.5 149.5 336.1 154.7 335.4C159.8 334.7 164.9 333.5 169.8 331.8L167.5 309.5C162.8 310.0 158.0 310.3 153.2 310.4L153.2 310.4ZM358.0 250.6C360.4 255.4 361.7 262.3 361.7 270.8C361.7 279.4 360.5 286.1 358.2 290.8C355.9 295.5 352.1 298.9 346.8 300.8C341.5 302.7 334.3 303.7 325.3 303.7C320.6 303.7 315.9 303.4 311.2 302.9C310.9 302.9 310.7 302.8 310.4 302.8V336.4H279.7V239.1C284.0 238.6 288.1 238.3 291.9 238.1C295.7 237.9 299.9 237.8 304.5 237.7C309.0 237.7 314.5 237.7 321.1 237.7C331.5 237.7 339.6 238.6 345.5 240.6H345.5C351.3 242.5 355.5 245.8 358.0 250.6L358.0 250.6ZM330.8 270.9C330.8 267.8 330.6 265.4 330.0 263.7C329.4 262.0 328.4 260.9 326.9 260.2C325.3 259.6 323.2 259.3 320.3 259.3H310.4V282.2H320.3C323.2 282.2 325.3 281.8 326.9 281.2C328.4 280.6 329.4 279.5 330.0 277.8V277.9C330.5 276.2 330.8 274.0 330.8 270.9ZM403.4 309.1C402.3 308.2 401.8 306.9 401.8 305.4V237.4H371.0V313.2C371.0 329.0 384.6 335.1 398.7 336.2C408.6 336.9 414.0 335.9 423.9 335.6C431.8 335.4 434.0 316.8 436.0 310.5H407.7C405.9 310.5 404.5 310.0 403.4 309.1V309.1ZM515.7 247.0L541.0 336.4H509.7L504.8 315.4H477.9L473.0 336.4H441.6L467.0 247.0C467.7 244.5 468.9 242.6 470.8 241.2C472.7 239.8 474.9 239.0 477.4 239.0H505.3C507.8 239.0 510.0 239.8 511.9 241.2H511.8C513.7 242.6 515.0 244.5 515.7 247.0H515.7ZM499.8 293.9L495.0 273.0C494.6 271.2 494.3 269.4 494.0 267.5C493.7 265.6 493.5 263.7 493.3 261.9H489.4C489.2 263.7 489.0 265.6 488.7 267.5C488.4 269.4 488.1 271.2 487.7 273.0L482.9 293.9H499.8ZM578.1 283.4H576.3C575.9 281.2 561.0 239.1 561.0 239.1H529.3L561.8 306.3V336.4H592.6V306.0L625.0 239.1H593.3C593.3 239.1 578.5 281.2 578.1 283.4H578.1ZM664.9 261.4H700.8L702.2 239.8C697.5 239.1 692.3 238.7 686.5 238.4C680.8 238.2 674.9 238.1 668.8 238.0C662.8 238.0 657.0 238.0 651.3 238.0C644.6 238.0 639.1 240.0 634.8 244.1C630.5 248.2 628.3 253.5 628.3 260.1V314.3C628.3 320.9 630.5 326.2 634.8 330.3C639.1 334.4 644.6 336.4 651.3 336.4C657.0 336.4 662.8 336.4 668.8 336.4C674.9 336.3 680.8 336.2 686.5 335.9C692.3 335.6 697.5 335.2 702.2 334.6L700.8 313.0H664.9C663.1 313.0 661.7 312.5 660.7 311.6C659.6 310.7 659.1 309.4 659.1 307.9V296.2H695.7V275.9H659.1V266.4C659.1 264.9 659.6 263.7 660.7 262.8V262.8C661.7 261.9 663.1 261.4 664.9 261.4ZM800.3 336.4H768.1L761.8 307.5C761.2 304.8 760.3 303.0 759.1 302.1C757.9 301.3 756.0 300.9 753.4 300.9C749.9 300.8 746.7 300.8 743.9 300.8V336.4H713.7V239.1C718.0 238.6 722.1 238.3 725.9 238.1C729.8 237.9 733.9 237.8 738.5 237.7C743.1 237.6 748.7 237.6 755.2 237.6C764.9 237.6 772.7 238.5 778.8 240.3C784.8 242.1 789.3 245.1 792.2 249.4C795.0 253.7 796.5 259.7 796.5 267.3C796.5 271.1 795.9 274.7 794.7 278.1C793.5 281.4 791.5 284.2 788.6 286.3C785.7 288.5 781.7 289.9 776.6 290.4V291.3C778.4 291.5 780.4 292.0 782.5 292.9C784.7 293.8 786.8 295.3 788.7 297.4C790.5 299.5 791.8 302.6 792.6 306.5L792.7 306.5L800.3 336.5L800.3 336.4ZM765.5 269.3C765.5 266.5 765.2 264.5 764.6 263.1C764.0 261.6 762.9 260.7 761.3 260.1C759.6 259.5 757.4 259.2 754.4 259.2H743.8V279.2H754.4C757.4 279.2 759.6 279.0 761.3 278.4C762.9 277.8 764.0 276.8 764.6 275.4V275.4C765.2 273.9 765.5 272.0 765.5 269.3V269.3ZM263.6 274.1V274.1H223.3V294.4H234.3V309.5H234.1C232.7 309.7 231.1 309.9 229.4 310.1C227.6 310.2 225.7 310.3 223.6 310.3C220.4 310.3 217.9 309.7 216.1 308.3C214.3 306.9 213.0 304.5 212.2 301.0C211.5 297.4 211.1 292.4 211.1 285.8C211.1 280.8 211.3 276.7 211.8 273.4C212.2 270.2 212.9 267.6 213.9 265.8C215.0 264.0 216.4 262.7 218.2 262.0C220.0 261.3 222.2 260.9 225.0 260.9C229.5 260.9 233.4 260.9 236.9 261.0C240.4 261.1 243.8 261.1 247.1 261.1C250.3 261.1 253.7 261.1 257.4 261.2L259.6 239.2C256.2 238.2 252.8 237.4 249.5 236.8C246.2 236.2 242.5 235.8 238.6 235.5C234.6 235.2 230.1 235.1 224.9 235.1C213.6 235.1 204.6 236.7 197.9 239.9C191.1 243.2 186.2 248.5 183.3 255.9C180.3 263.3 178.8 273.2 178.8 285.7C178.8 298.3 179.9 307.8 182.2 315.3C184.5 322.7 188.0 328.1 192.8 331.4C197.7 334.7 203.8 336.4 211.3 336.4C216.5 336.4 221.1 335.6 225.0 334.0C229.0 332.3 232.3 330.3 234.9 328.0C236.3 326.7 241.1 334.5 241.1 334.5H263.7L263.6 295.9V274.1H263.6Z" fill="currentColor"></path><path d="M494.6 0.6H306.1C296.4 0.6 288.5 8.0 287.7 17.5C287.7 18.0 287.6 18.6 287.6 19.1V210.6H513.1V19.1C513.1 8.9 504.8 0.6 494.6 0.6ZM462.1 91.7L399.9 182.3C397.0 186.5 390.4 184.5 390.4 179.4V132.3H379.1V132.4H339.3C335.5 132.4 332.9 128.3 334.6 124.9L377.6 36.4C378.5 34.7 380.3 33.5 382.3 33.5H430.1C433.9 33.5 436.5 37.5 434.8 41.0L414.1 83.6H457.8C462.0 83.6 464.5 88.3 462.1 91.7L462.1 91.7Z" fill="#0968F6"></path><path d="M159.1 111.2C159.1 111.2 100.2 143.4 100.2 143.4C92.6 147.6 88.6 157.3 91.4 165.5C92.9 169.5 96.9 172.2 99.9 175.0C109.4 183.8 119.0 192.6 128.5 201.3C130.2 202.9 132.0 204.6 133.7 206.2C136.8 209.0 140.8 210.6 145.0 210.6H187.6L159.1 111.2V111.2Z" fill="#3CC14E"></path><path d="M271.0 39.5L238.0 48.9L182.4 64.9C173.0 67.6 167.4 77.1 169.4 86.5C169.5 86.9 169.6 87.3 169.7 87.7L174.1 103.0L204.9 210.6H271.0C271.0 210.5 271.0 210.4 271.0 210.4V39.5Z" fill="#FFBD14"></path><path d="M700.5 143.4C700.5 143.4 641.6 111.2 641.6 111.2L613.1 210.6H655.7C659.9 210.6 663.9 209.0 667.0 206.2C668.7 204.5 670.5 202.9 672.2 201.3C681.7 192.6 691.3 183.8 700.8 175.0C703.8 172.2 707.8 169.5 709.3 165.5C712.1 157.3 708.1 147.6 700.5 143.4V143.4Z" fill="#FF8806"></path><path d="M683.0 156.0H683.0C658.7 148.3 659.8 189.6 626.6 190.8C625.5 190.8 624.7 191.9 625.0 193.0C625.3 193.7 625.8 194.3 626.5 194.5C663.5 209.7 665.9 165.5 683.1 159.3C684.7 158.7 684.6 156.6 683.0 156.0L683.0 156.0Z" fill="#FFC382"></path><path d="M666.4 143.1V143.1C668.1 142.5 668.1 140.2 666.4 139.7C645.9 133.3 642.6 159.6 624.4 171.1L620.9 183.5C646.9 184.2 650.8 148.7 666.4 143.1Z" fill="#FFC382"></path><path d="M160.4 145.9C154.4 144.0 148.1 143.5 141.9 143.3C138.2 143.2 131.5 143.8 127.0 144.3C124.3 144.6 122.4 147.0 122.7 149.7C123.3 154.4 124.2 161.5 125.4 165.1C128.4 174.6 133.8 184.4 141.0 191.5C147.4 197.8 157.4 202.9 166.8 202.2C167.4 202.1 168.0 202.1 168.5 202.1C173.5 201.8 176.9 196.7 175.0 192.1C170.0 179.7 158.3 169.4 150.1 163.3C149.0 162.5 150.0 160.7 151.3 161.3C161.2 165.6 174.7 173.7 180.4 185.4L170.2 149.9C167.1 148.3 163.7 147.0 160.4 145.9V145.9L160.4 145.9Z" fill="#A6F0A5"></path><path d="M631.0 87.7C631.1 87.3 631.2 86.9 631.3 86.5C633.3 77.1 627.7 67.6 618.3 64.9L562.7 48.9L529.7 39.5V210.4C529.7 210.4 529.7 210.5 529.7 210.6H595.8L626.6 103.0L631.0 87.7Z" fill="#F02D2D"></path><path d="M551.5 123.4C552.0 123.2 552.4 123.1 552.9 122.9C554.1 122.6 555.4 122.6 556.4 123.2C558.2 124.3 558.8 127.0 558.0 128.8C552.8 141.2 566.8 160.0 558.7 179.3C557.4 182.3 555.5 185.0 553.3 187.4C551.3 189.5 553.7 192.9 556.4 191.7C569.0 186.0 581.5 177.3 586.9 164.7C591.0 155.0 591.1 145.2 589.7 135.8C589.1 132.0 584.4 130.4 581.8 133.2C581.3 133.6 580.9 134.0 580.5 134.4C575.4 139.5 572.7 133.4 574.6 129.6C576.2 126.8 577.8 123.5 579.0 120.6C586.0 104.0 583.9 89.6 580.1 79.4C580.1 79.4 580.0 79.2 580.0 79.1C579.9 79.0 579.9 78.8 579.8 78.6C579.2 77.0 578.4 75.2 577.8 74.0C576.5 71.3 572.7 70.9 570.7 73.4C570.6 73.5 570.1 74.4 570.1 74.6C569.9 75.0 569.7 75.4 569.5 75.8C561.8 92.2 545.0 95.3 529.7 103.2V134.9C529.7 135.3 529.7 135.6 529.7 136.0V157.8C531 150.3 531.2 148.5 533.9 142.3C537.3 134.5 543.5 126.7 551.5 123.4Z" fill="#FFA0A0"></path><path d="M260.7 84.9C260.7 84.9 248.9 73.0 248.9 73.0C248.1 72.2 246.6 71.7 245.5 72.0C244.2 72.4 243.7 73.8 243.2 75.0C242.5 76.5 242.1 78.1 241.5 79.6C240.5 82.0 239.6 84.4 238.6 86.9L237.6 89.6C235.9 93.9 231.7 96.7 227.1 96.7L210.3 96.7C209.1 96.7 207.9 97.3 207.2 98.3C206.6 99.3 206.4 100.5 206.9 101.6L213.7 116.9C215.6 121.1 214.7 126.1 211.3 129.4L199.4 141.2C198.5 142.0 198.2 143.2 198.4 144.4C198.7 145.6 199.5 146.6 200.6 147.0L216.3 153.0C220.6 154.7 223.5 158.9 223.5 163.5L223.4 180.2C223.4 181.4 224.0 182.6 225.0 183.2C226.0 183.9 227.3 184.0 228.4 183.5L243.8 176.7C248.0 174.8 253.0 175.8 256.2 179.0C258.8 181.6 261.4 184.2 264.0 186.8C264.9 187.8 265.8 188.7 266.7 189.6C267.7 190.6 268.7 191.7 270.1 191.9C270.4 192.0 270.7 192.0 271.0 191.9V157.6C269.7 158.3 268.3 158.9 266.9 159.3C263.2 160.3 259.0 160.5 255.3 160.1C254.7 160.0 254.1 160.0 253.5 159.8C237.9 156.9 227.7 142.0 230.7 126.6C231.9 120.2 235.3 114.4 240.2 110.2C242.4 108.4 244.8 106.9 247.4 105.7C252.3 103.6 258.2 103.1 263.5 104.1C266.2 104.6 268.7 105.5 271.0 106.6V87.9C267.3 88.7 263.5 87.6 260.7 84.9Z" fill="#FFE58A"></path><path d="M257.2 109.4C254.1 109.5 251.3 110.3 248.7 111.5L248.7 111.5C248.5 111.5 248.4 111.6 248.2 111.7C248.1 111.8 248.1 111.8 248.0 111.8C240.6 115.8 235.6 123.8 236.0 132.9L236.0 132.9C236.6 145.4 247.2 155.1 259.8 154.5C262.8 154.4 265.7 153.6 268.2 152.4L268.3 152.4C268.4 152.4 268.6 152.3 268.8 152.2C268.8 152.2 268.9 152.1 268.9 152.1C269.6 151.7 270.3 151.3 271.0 150.8V113.3C267.1 110.6 262.3 109.2 257.2 109.4V109.4Z" fill="#FFE58A"></path><path d="M462.1 91.7L399.9 182.3C397.0 186.5 390.4 184.5 390.4 179.4V132.3H379.1V132.4H339.3C335.5 132.4 332.9 128.3 334.6 124.9L377.6 36.4C378.5 34.7 380.3 33.5 382.3 33.5H430.1C433.9 33.5 436.5 37.5 434.8 41.0L414.1 83.6H457.8C462.0 83.6 464.5 88.3 462.1 91.7L462.1 91.7Z" fill="white"></path></svg>`,
+    cardtrader: `<svg focusable="false" viewBox="0 0 271.1 45.1"><path d="m103.3 17.7-1.1 2-1.1 2.1c-.1.2-.4.4-.6.3h-1.7c-2.2 0-4.4 0-6.6 0-.4.1-.7-.2-.8-.6 0-.2 0-.4.1-.5 1.2-2.1 2.4-4.3 3.6-6.4s2.3-4.1 3.4-6.1 2.2-4 3.3-5.9c.4-.7.8-1.5 1.2-2.2 0 0 .1-.1.1-.1.2-.3.2-.3.4 0l.8 1.4c1 1.8 2 3.5 3 5.3l3 5.3c1 1.7 2 3.4 2.9 5.2.7 1.2 1.4 2.5 2.1 3.7.2.3.1.7-.2.9-.1.1-.3.1-.4.1-2.8 0-5.5 0-8.3 0-.4 0-.8-.2-.9-.5-.7-1.2-1.4-2.5-2.1-3.7z" fill="#2aa8f8"/><path d="m118.8 27.4c.2-.4.4-.7.6-1l1.7-3c.1-.3.4-.4.7-.4h8.3c.7 0 1 .5.6 1.1-1.1 1.9-2.1 3.8-3.2 5.7-1.3 2.2-2.5 4.4-3.8 6.7l-3.2 5.6-1.6 2.8c0 .1-.1.1-.2.2-.1-.1-.1-.1-.2-.2l-3.2-5.8c-1.1-2-2.3-4-3.4-6.1s-2.3-4.1-3.4-6.1c-.6-1-1.1-2-1.6-2.9-.2-.3-.2-.7.1-.9.1-.1.3-.2.5-.1h8.3c.3 0 .6.2.8.5.7 1.2 1.4 2.5 2.1 3.7z" fill="#fff"/><path d="m204.9 22.3v-9c0-.7.2-.9.9-.9h8c2.2 0 4.3.8 6 2.2 2 1.6 3.3 4 3.5 6.5.3 2.4-.2 4.8-1.6 6.8-1.5 2.4-4.1 3.9-6.9 4.2-.4.1-.8.1-1.2.1h-7.8c-.7 0-.9-.2-.9-.9zm4.6 0v5.2c0 .2 0 .3.3.3 1.5 0 3 0 4.5-.1 1.9-.1 3.6-1.4 4.2-3.3.3-1 .4-2 .3-3-.1-1.2-.6-2.3-1.4-3.1-1-1-2.4-1.6-3.8-1.5-1.2 0-2.4 0-3.6 0-.4 0-.4 0-.4.4z" fill="#fff"/><path d="m69.4 22.3v-8.8c0-.7.2-.8.8-.8h7.9c2.1 0 4.1.8 5.7 2.2 1.8 1.5 2.9 3.6 3.2 5.9.5 2.9-.3 5.9-2.2 8.1-1.5 1.8-3.6 2.9-5.9 3.1-.6 0-1.3 0-2 0h-6.4c-.1 0-.3 0-.4 0-.5-.1-.6-.3-.6-.8v-8.9zm4.5 0v5c0 .3 0 .4.4.4h3.4c.4 0 .8 0 1.2-.1 1.5-.3 2.9-1.3 3.5-2.7.6-1.5.7-3.2.1-4.7-.4-1.1-1.2-2.1-2.2-2.6-.8-.4-1.8-.6-2.7-.6-1.1 0-2.1 0-3.2 0-.4 0-.4 0-.4.4v4.9z" fill="#2aa8f8"/><path d="m265.8 24.9.9 1.1 4.2 5.2c.2.2.3.5.2.7s-.4.3-.6.3h-3.6c-.4 0-.7-.1-.9-.4-1.4-1.7-2.8-3.5-4.1-5.2-.2-.2-.4-.5-.6-.7-.1-.1-.3-.2-.4-.2-.4 0-.7 0-1.1 0s-.4.1-.4.4v5.2.3c0 .3-.2.6-.5.6 0 0 0 0-.1 0-1.1 0-2.3 0-3.4 0-.3 0-.6-.3-.6-.6 0-.1 0-.2 0-.3v-18c0-.7.2-.9.9-.9h6.9c2.5-.1 4.8 1.3 6 3.5 1.4 2.3 1.1 5.2-.6 7.3-.5.6-1.1 1.1-1.7 1.5-.3.1-.3.1-.5.2zm-4.7-3.1h1.2c.3 0 .7-.1 1-.2 1-.5 1.6-1.7 1.3-2.9-.2-1-1-1.8-2-1.9s-2.1 0-3.2 0c-.2 0-.2.1-.2.3v4.4c0 .2.1.3.3.3z" fill="#fff"/><path d="m153.7 22.3v-9c0-.6.2-.8.8-.8h7.1c1.6 0 3.2.6 4.4 1.7 1.3 1.1 2.1 2.6 2.3 4.3s-.3 3.4-1.4 4.7c-.5.7-1.1 1.2-1.9 1.6-.2.1-.2.2-.1.4 1.6 2 3.3 4.1 4.9 6.2.3.4.3.7-.1.8-.1.1-.2.1-.3.1h-3.8c-.3 0-.6-.2-.8-.4-1.6-2-3.1-3.9-4.7-5.9-.1-.1-.2-.2-.4-.2-.4 0-.7 0-1.1 0s-.4.1-.4.4v5.2.3c0 .4-.3.7-.6.7h-.1-3.2c-.5 0-.7-.2-.7-.7zm4.6-3.1v2.2c0 .3.1.4.4.4h2.9c.6 0 1.2-.3 1.6-.8s.6-1.2.6-1.9c0-1.3-1.1-2.3-2.4-2.3h-2.7c-.3 0-.4.1-.4.4z" fill="#fff"/><path d="m47.7 22.3v-8.8c0-.7.2-.8.8-.8h6.7c1.6 0 3.2.6 4.4 1.7 1.6 1.4 2.4 3.4 2.2 5.5-.1 1.4-.7 2.7-1.7 3.7-.5.4-.9.8-1.4 1.2-.2.1-.2.2 0 .4l2.5 3.1 2.2 2.8c.1.1.1.2.2.3.1.2.1.5-.1.6-.1 0-.1.1-.2.1-.2 0-.3.1-.5 0h-3c-.5 0-1-.2-1.3-.7-1.4-1.8-2.9-3.6-4.3-5.4-.1-.2-.4-.3-.6-.3-.3 0-.5 0-.8 0s-.4 0-.4.4v5.1c0 .6-.3.9-.9.9h-2.9c-.6 0-.8-.2-.8-.8v-9zm4.5-3v2.1c0 .2.1.3.3.3h2.6c.6 0 1.1-.2 1.5-.6.7-.7 1-1.7.7-2.6-.2-1-1.2-1.8-2.2-1.8-.8 0-1.7 0-2.5 0-.3 0-.4.1-.3.4 0 .8-.1 1.5-.1 2.2z" fill="#2aa8f8"/><path d="m186.6 12.5h2.2c.5-.1.9.3 1 .7l3.1 9.2c.8 2.4 1.5 4.7 2.3 7.1.2.7.4 1.3.6 2 .1.3 0 .6-.2.7-.1.1-.2.1-.3.1h-3.6c-.4 0-.7-.2-.8-.7-.2-.7-.4-1.4-.6-2.1 0-.2-.2-.3-.4-.3h-6.4c-.2 0-.4.1-.4.3-.2.7-.4 1.3-.6 2-.2.6-.4.8-1 .8h-3.3c-.1 0-.2 0-.3 0-.3 0-.5-.3-.5-.5 0 0 0 0 0-.1s0-.3.1-.4c1-3 2-6.1 3-9.1l2.5-7.4c.2-.5.3-1 .5-1.5.1-.5.5-.8 1-.7zm0 5.1c0 .1-.1.1-.1.1-.7 2.3-1.4 4.5-2.1 6.8-.1.3-.1.4.3.4h3.7.3z" fill="#fff"/><path d="m17.2 19.9c-.5 0-1 0-1.5 0-.4 0-.8-.2-.9-.6-.2-.3-.3-.6-.5-.9-.6-.8-1.4-1.3-2.4-1.5-1.8-.6-3.8-.2-5.3.9-1 .8-1.7 1.9-1.9 3.1-.3 1.2-.2 2.5.2 3.6.6 1.7 2 2.9 3.7 3.3 1.4.4 2.9.2 4.2-.5.8-.4 1.5-1.1 1.9-1.9.2-.4.6-.7 1.1-.6h3c.6 0 .8.3.6.8-.4 1.3-1 2.5-1.9 3.5-1.4 1.6-3.4 2.7-5.5 3.1s-4.3.1-6.3-.8c-2-.8-3.7-2.4-4.6-4.4-.6-1.2-.9-2.4-1-3.7-.2-2 .2-4.1 1.1-5.9.9-1.6 2.2-3 3.8-3.9 1.3-.7 2.8-1.2 4.4-1.3 2.5-.2 5 .5 7 2 1.6 1.2 2.7 2.8 3.2 4.7.2.5-.1.9-.7.9h-1.7z" fill="#2aa8f8"/><path d="m39.4 32h-1.5c-.5.1-.9-.2-1-.7 0 0 0 0 0-.1-.2-.7-.4-1.4-.6-2 0-.2-.2-.3-.4-.3h-6.2c-.2 0-.3.1-.4.3-.2.7-.4 1.4-.6 2-.2.5-.4.7-.9.7h-3.3c-.1 0-.2 0-.2 0-.3 0-.5-.2-.5-.5 0-.1 0-.1 0-.2.1-.4.2-.7.3-1.1.7-2.2 1.4-4.3 2.2-6.5l2.4-7.4c.3-1 .7-2 1-3 .1-.4.5-.7.9-.6h4.3c.4-.1.8.2.9.7 1 3.1 2 6.2 3.1 9.3.8 2.3 1.5 4.6 2.2 6.8.2.6.4 1.1.5 1.7s0 .8-.5.8c-.3.1-1.1.1-1.7.1zm-6.6-14.2c-.2.4-.3.7-.4 1-.5 1.9-1.1 3.7-1.7 5.6-.1.3-.1.4.3.4h3.5c.3 0 .3 0 .2-.3-.5-1.7-1-3.4-1.5-5.1-.1-.6-.3-1.1-.4-1.6z" fill="#2aa8f8"/><g fill="#fff"><path d="m233 22.3v-9c0-.7.2-.9.9-.9h10.1c.7 0 .9.2.9.9v2.6c0 .6-.2.9-.9.9h-6c-.4 0-.4 0-.4.4v2.4c0 .4 0 .4.4.4h5.2.4c.3 0 .5.3.5.6v3c0 .3-.3.6-.6.6h-5.5c-.4 0-.4 0-.4.4v2.7c0 .4 0 .4.4.4h6.2c.2 0 .4 0 .5.1.2.1.3.3.3.5v3.1c0 .3-.3.6-.6.6h-10.7c-.2 0-.3 0-.5-.1s-.4-.4-.3-.7v-8.9z"/><path d="m140 24.3v7 .4c0 .3-.3.6-.6.6h-3.3c-.3 0-.6-.2-.7-.6 0-.2 0-.4 0-.5 0-4.6 0-9.2 0-13.8 0-.5 0-.5-.5-.5h-3.2c-.6 0-.8-.2-.8-.8v-2.8c-.1-.4.2-.8.6-.8h.2 1.1 10.9.4c.3 0 .6.3.6.7v3c0 .3-.2.6-.6.7h-.1-3.4c-.4 0-.4 0-.4.4z"/></g></svg>`,
+    cardnexus: `<svg focusable="false" viewBox="0 0 222 44" fill="none"><path d="M9.0 12.4H19.9L18.6 16.7C18.5 17.0 18.2 17.4 18.0 17.6C17.7 17.9 17.4 18.0 17.0 18.0H8.4L8.1 19.0L5.9 25.8H15.7L14.0 30.2C13.8 30.6 13.7 30.8 13.4 31.1C13.1 31.3 12.8 31.5 12.5 31.5H3.3C1.9 31.5 0.9 30.9 0.4 29.7C-0.0 28.6 -0.1 27.4 0.2 26.1L3.0 17.4C3.4 16.0 4.2 14.8 5.4 13.8C6.6 12.9 7.8 12.4 9.0 12.4V12.4H9.0Z" fill="currentColor"></path><path d="M32.7 12.5L35.2 31.5L30.0 31.4C29.8 31.4 29.7 31.3 29.5 31.2C29.4 31.0 29.3 30.8 29.2 30.6L29.1 29.5H21.9L21.2 30.4C21.0 30.7 20.9 30.8 20.8 31.0C20.7 31.1 20.5 31.2 20.3 31.3C20.2 31.4 20.0 31.4 19.8 31.4L17.6 31.5H13.8L15.4 29.4L25.8 15.3L25.9 12.5H32.7H32.7ZM25.5 24.2H28.9L28.5 19.4L25.5 24.2H25.5Z" fill="currentColor"></path><path d="M47.7 31.5L46.3 27.0V27.0L42.7 27.0L41.7 30.2C41.6 30.6 41.4 30.9 41.1 31.2C40.8 31.4 40.5 31.5 40.2 31.5H35.7L40.5 16.4L40.5 12.5H54.2C55.5 12.5 56.4 13.0 57.0 14.1C57.6 15.1 57.7 16.4 57.2 17.9L55.9 22.0C55.6 22.9 55.2 23.7 54.6 24.5C53.9 25.2 53.2 25.9 52.4 26.3L54.1 31.5H47.7ZM51.6 18.2C51.6 18.1 51.6 18.1 51.6 18.0C51.5 18.0 51.5 18.0 51.4 18.0H45.5L45.2 18.9L44.4 21.5H49.9C50.1 21.5 50.2 21.5 50.4 21.3C50.5 21.2 50.6 21.1 50.7 20.9L51.6 18.2L51.6 18.2H51.6Z" fill="currentColor"></path><path d="M75.4 14.2C75.9 15.2 76.0 16.4 75.5 17.8L72.8 26.5C72.3 27.9 71.5 29.1 70.4 30.0C69.2 31.0 68.0 31.5 66.8 31.5H54.7L59.5 16.4V12.4H72.5C73.9 12.4 74.8 13.0 75.4 14.2H75.4ZM67.5 25.5L69.9 18.0H64.5L64.2 19.1L62.1 25.8H67.1C67.3 25.8 67.5 25.7 67.5 25.5H67.5Z" fill="currentColor"></path><path d="M143.4 13.7C143.5 13.4 143.7 13.1 144.0 12.8C144.3 12.6 144.6 12.4 145.0 12.4H149.4L143.8 30.1C143.7 30.5 143.4 30.8 143.2 31.0C142.9 31.3 142.6 31.4 142.2 31.4H139.0C138.6 31.4 138.3 31.2 138.1 30.8L134.9 21.1L132.1 30.1C132.0 30.5 131.8 30.8 131.5 31.0C131.2 31.3 130.9 31.4 130.6 31.4H126.2L130.9 16.3L130.9 12.4H137.1C137.5 12.4 137.8 12.6 137.9 13.0L140.9 21.8L143.4 13.7L143.4 13.7Z" fill="currentColor"></path><path d="M150.9 12.4L166.5 12.4L165.2 16.6C165.1 16.9 164.9 17.1 164.7 17.3C164.5 17.5 164.3 17.5 164.1 17.5H154.8L154.6 18.6L154.2 19.7H162.4L161.3 23.2C161.2 23.4 161.1 23.6 160.9 23.8C160.7 24.0 160.5 24.0 160.2 24.0H152.8L152.1 26.2H162.1L160.8 30.6C160.7 30.8 160.5 31.0 160.3 31.2C160.2 31.4 159.9 31.4 159.7 31.4H144.9L149.6 16.5L150.9 12.4L150.9 12.4L150.9 12.4Z" fill="currentColor"></path><path d="M177.4 21.7C177.4 21.8 177.3 21.8 177.3 21.9L180.5 31.4H173.8L172.4 27.0L168.6 30.9C168.3 31.2 167.9 31.4 167.5 31.4H161.1L170.4 21.7C170.5 21.6 170.5 21.6 170.5 21.5L167.5 12.4H173.5C173.9 12.4 174.2 12.7 174.4 13.1L175.2 15.5L175.5 16.5L179.4 12.4H186.4L177.4 21.7H177.4L177.4 21.7Z" fill="currentColor"></path><path d="M200.1 12.4H204.3L199.9 26.5C199.5 27.9 198.7 29.0 197.5 30.0C196.3 31.0 195.1 31.5 193.9 31.5C191.6 31.5 188.9 31.5 185.6 31.5C184.4 31.5 183.4 30.9 182.8 29.9C182.2 28.8 182.1 27.6 182.6 26.1L185.7 16.3L186.9 12.4H190.9C191.3 12.4 191.5 12.6 191.7 12.9C191.9 13.3 191.9 13.6 191.8 14.1L188.4 24.8L188.1 25.8H194.4C194.6 25.8 194.7 25.7 194.8 25.5L198.4 13.9C198.6 13.5 198.8 13.1 199.1 12.8C199.4 12.6 199.8 12.4 200.1 12.4L200.1 12.4H200.1Z" fill="currentColor"></path><path d="M209.7 12.4H221.7L220.5 16.3C220.4 16.6 220.2 16.9 219.9 17.2C219.6 17.4 219.3 17.5 219.0 17.5H209.0L208.7 18.6L208.4 19.7H215.5C216.9 19.7 217.9 20.3 218.5 21.4C219.0 22.5 219.0 23.7 218.6 25.0L218.1 26.4C217.7 27.8 216.9 29.0 215.7 30.0C214.5 30.9 213.3 31.4 212.1 31.4H199.8L201.1 27.5C201.2 27.1 201.4 26.8 201.7 26.6C202.0 26.3 202.3 26.2 202.6 26.2H212.5C212.7 26.2 212.9 26.1 212.9 25.9L213.6 24.1H206.4C205.0 24.1 204.0 23.5 203.4 22.3C202.9 21.2 202.9 20.1 203.3 18.7L203.7 17.4C204.2 16.0 205.0 14.9 206.1 13.9C207.3 12.9 208.5 12.4 209.7 12.4L209.7 12.4L209.7 12.4Z" fill="currentColor"></path><path d="M123.5 21.4L114.1 18.7L118.8 5.4C118.9 5.0 118.5 4.7 118.2 4.9L105.9 11.7L102.1 0.2C102.0 -0.1 101.4 -0.0 101.3 0.3L97.9 10.9L81.0 0.6C80.6 0.4 80.2 0.9 80.4 1.2L91.1 18.0L80.0 21.4C79.6 21.5 79.6 22.1 80.0 22.2L89.2 25.3L84.6 38.3C84.5 38.7 84.9 39.0 85.2 38.8L97.7 31.9L101.2 43.6C101.3 44.0 101.9 44.1 102.0 43.6L105.5 32.7L122.3 43.0C122.7 43.3 123.1 42.8 122.9 42.5L112.6 25.7L123.5 22.2C123.9 22.1 123.9 21.5 123.5 21.4H123.5ZM113.1 11.4L109.5 21.5C109.4 21.8 109.2 22.0 109.0 22.1L90.5 32.5C90.4 32.5 90.3 32.4 90.3 32.3L93.9 22.2C94.0 21.9 94.1 21.7 94.4 21.6L112.9 11.2C113.0 11.2 113.1 11.3 113.1 11.4Z" fill="currentColor"></path></svg>`
+  };
+
+  var CSS = `
+.tpci{--bg:#14110c;--g:#c9a961;--gl:#e3c893;--pn:#1c1812;--ph:#221d15;--tx:#efe7d6;--mu:#a39a86;font-family:Inter,system-ui,sans-serif;color:var(--tx);max-width:1160px;margin:0 auto;text-align:left}
+.tpci *{box-sizing:border-box}
+.tpci-fr{position:relative;padding:34px 22px 22px;border:1px solid rgba(201,169,97,.5);border-radius:10px}
+.tpci-hd{position:absolute;top:0;left:18px;transform:translateY(-50%);margin:0;padding:0 12px;background:var(--bg,#14110c);font-family:'EB Garamond',Georgia,serif;font-weight:600;font-size:22px;line-height:1.2;color:var(--g)}
+.tpci-st{margin:0 0 14px;font-size:12px;color:var(--mu)}
+.tpci-ct{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr)) minmax(0,1.5fr);gap:8px}
+.tpci-ct input,.tpci-ct select{width:100%;min-width:0;height:42px;padding:0 12px;background:var(--pn);color:var(--tx);border:1px solid rgba(201,169,97,.45);border-radius:6px;font:400 16px Inter,system-ui,sans-serif}
+.tpci-ct select{padding:0 4px 0 8px}
+.tpci-ct input::placeholder{color:var(--mu);opacity:1}
+.tpci-ct input:hover,.tpci-ct select:hover,.tpci-ct input:active,.tpci-ct select:active{border-color:var(--g);background:var(--ph)}
+.tpci input:focus-visible,.tpci select:focus-visible,.tpci a:focus-visible,.tpci button:focus-visible{outline:2px solid var(--gl);outline-offset:2px}
+.tpci-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.tpci-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;margin:14px 0 14px;min-height:24px;font-size:13px;color:var(--mu)}
+.tpci-clr{background:none;border:0;padding:4px 2px;font:600 13px Inter,system-ui,sans-serif;color:var(--g);text-decoration:underline;cursor:pointer}
+.tpci-clr:hover,.tpci-clr:active{color:var(--gl)}
+.tpci-gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.tpci-t{display:grid;grid-template-columns:76px minmax(0,1fr);column-gap:14px;row-gap:12px;align-content:start;min-width:0;padding:14px;background:rgba(201,169,97,.03);border:1px solid rgba(201,169,97,.45);border-radius:6px}
+.tpci-t:hover,.tpci-t:active{border-color:var(--g);background:rgba(201,169,97,.06)}
+.tpci-art{position:relative;width:76px;border:2px solid var(--c,#b9bfd0);border-radius:6px;background:var(--pn);overflow:hidden}
+.tpci-art:before{content:"";display:block;padding-top:139.68%}
+.tpci-art img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
+.tpci-in{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0}
+.tpci-nm{margin:0;font-weight:600;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
+.tpci-cd{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;letter-spacing:.04em;color:var(--mu)}
+.tpci-r{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 7px;border-radius:4px;background:rgba(201,169,97,.12);border:1px solid rgba(201,169,97,.22);color:var(--gl);font:600 11px/1 Inter,sans-serif;letter-spacing:.04em}
+.tpci-mt{font-size:12px;color:var(--mu)}
+.tpci-by{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
+.tpci-by a{flex:1 1 118px;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:40px;padding:6px 12px;border:1px solid rgba(201,169,97,.45);border-radius:6px;background:rgba(201,169,97,.06);color:var(--tx);text-decoration:none;font:600 14px Inter,sans-serif;font-variant-numeric:tabular-nums}
+.tpci-by a:hover,.tpci-by a:active{border-color:var(--g);background:rgba(201,169,97,.16)}
+.tpci-lo{display:flex;align-items:center;min-width:0}
+.tpci-lo svg{height:16px;width:auto;max-width:76px;display:block}
+.tpci-pr{color:var(--gl);white-space:nowrap}
+.tpci-more{display:block;margin:22px auto 0;padding:10px 26px;background:none;border:1px solid var(--g);border-radius:6px;color:var(--g);font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
+.tpci-more:hover,.tpci-more:active{background:rgba(201,169,97,.12);color:var(--gl)}
+.tpci-msg{margin:18px 0;text-align:center;font-size:14px;line-height:1.5;color:var(--mu)}
+.tpci-hide{display:none!important}
+@media (prefers-reduced-motion:no-preference){.tpci-t,.tpci-by a,.tpci-more,.tpci-ct input,.tpci-ct select{transition:border-color .2s,background .2s,color .2s}}
+@media (max-width:900px){.tpci-ct{grid-template-columns:repeat(2,minmax(0,1fr))}.tpci-ct input{grid-column:1/-1}}
+@media (max-width:700px){
+.tpci-fr{padding:28px 12px 14px}.tpci-hd{font-size:19px;left:10px;padding:0 8px}
+.tpci-gr{grid-template-columns:minmax(0,1fr);gap:10px}
+.tpci-t{padding:12px;grid-template-columns:64px minmax(0,1fr);column-gap:12px}.tpci-art{width:64px}
+}
+`;
+
+  var script = document.currentScript;
+
+  function safeUrl(store, url) {
+    try {
+      if (typeof url !== 'string' || url.length > 300 || !STORES[store]) return null;
+      var u = new URL(url);
+      var d = STORES[store][1];
+      if (u.protocol !== 'https:' || u.username || u.password) return null;
+      if (u.hostname !== d && u.hostname.slice(-(d.length + 1)) !== '.' + d) return null;
+      return u.href;
+    } catch (e) { return null; }
+  }
+  function money(cents) { return '$' + (cents / 100).toFixed(2); }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function norm(s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ''); }
+  function cmp(a, b) { return a < b ? -1 : a > b ? 1 : 0; }
+  var collator = typeof Intl !== 'undefined' && Intl.Collator ? new Intl.Collator('en', { numeric: true, sensitivity: 'base' }) : null;
+  function cmpText(a, b) { return collator ? collator.compare(a, b) : cmp(a.toLowerCase(), b.toLowerCase()); }
+
+  // Relative addresses (the preview page's sample.json) only work on github.io, localhost or a local file.
+  function srcOk(src) {
+    if (/^https:\/\//i.test(src)) return true;
+    if (!src || /^[a-z][a-z0-9+.-]*:/i.test(src) || src.slice(0, 2) === '//') return false;
+    var h = location.hostname;
+    return !h || h === 'localhost' || h === '127.0.0.1' || h === 'github.io' || h.slice(-10) === '.github.io';
+  }
+
+  // Rebuild the list from allowed fields only; anything unexpected is dropped.
+  function clean(data) {
+    var out = [];
+    var list = data && Array.isArray(data.cards) ? data.cards : [];
+    for (var i = 0; i < list.length && out.length < MAX_CARDS; i++) {
+      var c = list[i];
+      if (!c || typeof c.code !== 'string' || !/^[A-Z0-9-]{3,31}$/.test(c.code) || typeof c.name !== 'string') continue;
+      var name = c.name.replace(/[\u0000-\u001f\u007f]/g, '').slice(0, 120);
+      if (!name) continue;
+      var stores = [], seen = {};
+      var src = Array.isArray(c.stores) ? c.stores : [];
+      for (var j = 0; j < src.length; j++) {
+        var s = src[j];
+        var url = s && !seen[s.store] && safeUrl(s.store, s.url);
+        if (url && typeof s.cents === 'number' && s.cents >= 1 && s.cents <= 10000000 && Math.floor(s.cents) === s.cents) {
+          seen[s.store] = 1;
+          stores.push({ store: s.store, cents: s.cents, url: url });
+        }
+      }
+      if (!stores.length) continue;
+      stores.sort(function (a, b) { return ORDER.indexOf(a.store) - ORDER.indexOf(b.store); });
+      var dash = c.code.indexOf('-');
+      out.push({
+        code: c.code,
+        key: norm(c.code),
+        num: dash >= 0 ? norm(c.code.slice(dash + 1)) : '',
+        name: name,
+        lname: name.toLowerCase(),
+        rarity: typeof c.rarity === 'string' && /^[A-Z]{1,5}$/.test(c.rarity) ? c.rarity : '',
+        colour: COLOURS[c.colour] ? c.colour : '',
+        set: typeof c.set === 'string' && /^[A-Z0-9]{2,10}$/.test(c.set) ? c.set : '',
+        stores: stores
+      });
+    }
+    return out;
+  }
+
+  function ago(at) {
+    var mins = Math.round((Date.now() - at) / 60000);
+    if (!(at > 0) || mins > 180) return 'Checked a while ago';
+    if (mins < 2) return 'Checked just now';
+    if (mins < 60) return 'Checked ' + mins + ' min ago';
+    return 'Checked ' + Math.round(mins / 60) + ' h ago';
+  }
+
+  function rarityRank(r) { var i = RARITIES.indexOf(r); return r ? i : -2; }
+
+  function mount() {
+    if (!document.getElementById('tpc-fonts')) {
+      var l = document.createElement('link');
+      l.id = 'tpc-fonts'; l.rel = 'stylesheet'; l.href = FONTS;
+      document.head.appendChild(l);
+    }
+    if (!document.getElementById('tpci-style')) {
+      var s = document.createElement('style');
+      s.id = 'tpci-style'; s.textContent = CSS;
+      document.head.appendChild(s);
+    }
+
+    var root = document.getElementById('tpc-inventory');
+    if (!root) {
+      root = document.createElement('div');
+      root.id = 'tpc-inventory';
+      if (script && script.parentNode) script.parentNode.insertBefore(root, script.nextSibling);
+      else document.body.appendChild(root);
+    }
+    if (root.getAttribute('data-tpci') === '1') return;
+    root.setAttribute('data-tpci', '1');
+    var SRC = root.getAttribute('data-src') || (script && script.getAttribute('data-src')) || '';
+    root.className = 'tpci';
+
+    var frame = el('section', 'tpci-fr');
+    frame.setAttribute('aria-labelledby', 'tpci-h');
+    var h = el('h3', 'tpci-hd', 'Cards in stock'); h.id = 'tpci-h';
+    var stamp = el('p', 'tpci-st', '');
+    frame.appendChild(h); frame.appendChild(stamp);
+    var msg = el('p', 'tpci-msg', 'Loading the card list...');
+    msg.setAttribute('role', 'status');
+    frame.appendChild(msg);
+    root.appendChild(frame);
+
+    var cards = [];
+    var shown = PAGE;
+    var q, colour, store, rarity, sort, count, clear, grid, more;
+
+    function sel(label, first) {
+      var n = el('select'); n.setAttribute('aria-label', label);
+      if (first != null) opt(n, '', first);
+      return n;
+    }
+    function opt(n, value, label) { var o = el('option', null, label); o.value = value; n.appendChild(o); }
+
+    function priceOf(c, st) {
+      var best = Infinity;
+      for (var i = 0; i < c.stores.length; i++) {
+        if ((!st || c.stores[i].store === st) && c.stores[i].cents < best) best = c.stores[i].cents;
+      }
+      return best;
+    }
+    // The card's cheapest store (ties: the earlier store in the fixed order), or the selected store.
+    function cheapStore(c, st) {
+      if (st) return ORDER.indexOf(st);
+      var best = null;
+      for (var i = 0; i < c.stores.length; i++) if (!best || c.stores[i].cents < best.cents) best = c.stores[i];
+      return ORDER.indexOf(best.store);
+    }
+
+    function matches(c, text, ntext, tokens, col, st, ra) {
+      if (col && c.colour !== col) return false;
+      if (ra && c.rarity !== ra) return false;
+      if (st && !c.stores.some(function (x) { return x.store === st; })) return false;
+      if (!text) return true;
+      if (c.lname.indexOf(text) >= 0) return true;
+      if (ntext && (c.key.indexOf(ntext) >= 0 || c.num.indexOf(ntext) >= 0)) return true;
+      var hay = c.lname + ' ' + c.code.toLowerCase() + ' ' + c.key + ' ' + c.num;
+      return tokens.length > 1 && tokens.every(function (t) { return hay.indexOf(t) >= 0; });
+    }
+
+    function sorter(mode, st) {
+      return function (a, b) {
+        var r = 0;
+        if (mode === 'name') r = cmpText(a.name, b.name);
+        else if (mode === 'colour') r = (a.colour ? COLOUR_ORDER.indexOf(a.colour) : 9) - (b.colour ? COLOUR_ORDER.indexOf(b.colour) : 9);
+        else if (mode === 'rarity') r = rarityRank(b.rarity) - rarityRank(a.rarity);
+        else if (mode === 'store') r = cheapStore(a, st) - cheapStore(b, st);
+        else if (mode === 'high') r = priceOf(b, st) - priceOf(a, st);
+        else if (mode === 'low') r = priceOf(a, st) - priceOf(b, st);
+        return r || cmpText(a.code, b.code) || cmp(a.code, b.code);
+      };
+    }
+
+    function tile(c, st) {
+      var t = el('article', 'tpci-t');
+      var art = el('div', 'tpci-art');
+      if (c.colour) art.style.setProperty('--c', COLOURS[c.colour]);
+      var img = el('img'); img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
+      img.onerror = function () { if (img.parentNode) img.parentNode.removeChild(img); };
+      img.src = ART + encodeURIComponent(c.code) + '.png?src=official';
+      art.appendChild(img);
+      var info = el('div', 'tpci-in');
+      var cd = el('div', 'tpci-cd');
+      cd.appendChild(el('span', null, c.code));
+      if (c.rarity) cd.appendChild(el('span', 'tpci-r', c.rarity));
+      info.appendChild(cd);
+      info.appendChild(el('p', 'tpci-nm', c.name));
+      var meta = [c.colour, c.set].filter(Boolean).join(' · ');
+      if (meta) info.appendChild(el('span', 'tpci-mt', meta));
+      var by = el('div', 'tpci-by');
+      var stores = c.stores.slice();
+      if (st) stores.sort(function (a, b) { return (b.store === st) - (a.store === st); });
+      stores.forEach(function (x) {
+        var a = el('a'); a.href = x.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        a.setAttribute('aria-label', 'Buy ' + c.name + ' on ' + STORES[x.store][0] + ' for ' + money(x.cents));
+        var lo = el('span', 'tpci-lo');
+        lo.setAttribute('aria-hidden', 'true');
+        lo.innerHTML = LOGOS[x.store]; // constant logo markup from this file, never data
+        a.appendChild(lo);
+        a.appendChild(el('span', 'tpci-pr', money(x.cents)));
+        by.appendChild(a);
+      });
+      t.appendChild(art); t.appendChild(info); t.appendChild(by);
+      return t;
+    }
+
+    function render() {
+      var text = q.value.trim().toLowerCase();
+      var ntext = norm(text);
+      var tokens = text.split(/\s+/).filter(Boolean).map(function (t) { return norm(t) || t; });
+      var col = colour.value, st = store.value, ra = rarity.value;
+      var list = cards.filter(function (c) { return matches(c, text, ntext, tokens, col, st, ra); });
+      list.sort(sorter(sort.value, st));
+      count.textContent = list.length + ' of ' + cards.length + ' cards';
+      clear.className = 'tpci-clr' + (text || col || st || ra ? '' : ' tpci-hide');
+      while (grid.firstChild) grid.removeChild(grid.firstChild);
+      list.slice(0, shown).forEach(function (c) { grid.appendChild(tile(c, st)); });
+      more.className = 'tpci-more' + (list.length > shown ? '' : ' tpci-hide');
+      msg.className = 'tpci-msg' + (list.length ? ' tpci-hide' : '');
+      msg.textContent = 'No card matches. Clear the search to see everything.';
+    }
+
+    function show(data) {
+      cards = clean(data);
+      stamp.textContent = ago(data && data.at);
+      if (!cards.length) { msg.textContent = 'Nothing is listed right now. Check back soon.'; return; }
+
+      var ct = el('div', 'tpci-ct');
+      q = el('input'); q.type = 'search'; q.placeholder = 'Search name or card number';
+      q.setAttribute('aria-label', 'Search by card name or card number');
+      q.setAttribute('autocomplete', 'off');
+      colour = sel('Colour', 'All colours');
+      COLOUR_ORDER.forEach(function (x) { opt(colour, x, x); });
+      store = sel('Store', 'All stores');
+      ORDER.forEach(function (x) { opt(store, x, STORES[x][0]); });
+      rarity = sel('Rarity', 'All rarities');
+      var present = {};
+      cards.forEach(function (c) { if (c.rarity) present[c.rarity] = 1; });
+      var known = RARITIES.filter(function (r) { return present[r]; });
+      var other = Object.keys(present).filter(function (r) { return RARITIES.indexOf(r) < 0; }).sort();
+      known.concat(other).forEach(function (r) { opt(rarity, r, r); });
+      sort = sel('Sort by');
+      SORTS.forEach(function (x) { opt(sort, x[0], 'Sort: ' + x[1]); });
+      [q, colour, store, rarity, sort].forEach(function (n) { ct.appendChild(n); });
+
+      var bar = el('div', 'tpci-bar');
+      count = el('span', null, ''); count.setAttribute('aria-live', 'polite');
+      clear = el('button', 'tpci-clr', 'Clear filters'); clear.type = 'button';
+      bar.appendChild(count); bar.appendChild(clear);
+      grid = el('div', 'tpci-gr');
+      more = el('button', 'tpci-more', 'Show more'); more.type = 'button';
+
+      frame.insertBefore(ct, msg); frame.insertBefore(bar, msg); frame.insertBefore(grid, msg);
+      frame.appendChild(more);
+
+      var reset = function () { shown = PAGE; render(); };
+      q.addEventListener('input', reset);
+      [colour, store, rarity, sort].forEach(function (n) { n.addEventListener('change', reset); });
+      clear.addEventListener('click', function () {
+        q.value = ''; colour.value = ''; store.value = ''; rarity.value = '';
+        reset(); q.focus();
+      });
+      more.addEventListener('click', function () { shown += PAGE; render(); });
+      render();
+    }
+
+    function fail() { msg.className = 'tpci-msg'; msg.textContent = 'The card list could not be loaded. Please try again later.'; }
+
+    function load(again) {
+      if (!srcOk(SRC)) { fail(); return; }
+      fetch(SRC, { credentials: 'omit' })
+        .then(function (r) { if (!r.ok) throw new Error('bad'); return r.json(); })
+        .then(show)
+        .catch(function () { if (again) setTimeout(function () { load(false); }, 5000); else fail(); });
+    }
+    load(true);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
+  else mount();
+})();
