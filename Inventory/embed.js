@@ -321,6 +321,7 @@
 
     function show(data) {
       cards = clean(data);
+      announce(cards);
       stamp.textContent = ago(data && data.at);
       if (!cards.length) { msg.textContent = 'Nothing is listed right now. Check back soon.'; return; }
 
@@ -361,6 +362,15 @@
       });
       more.addEventListener('click', function () { shown += PAGE; render(); });
       render();
+    }
+
+    // Tell the other embeds on the page (the Marketplaces tiles) which rarities each store has right now.
+    function announce(list) {
+      var by = {};
+      list.forEach(function (c) { if (c.rarity) c.stores.forEach(function (x) { (by[x.store] = by[x.store] || {})[c.rarity] = 1; }); });
+      var detail = { at: Date.now(), stores: {} };
+      Object.keys(STORES).forEach(function (s) { detail.stores[s] = Object.keys(by[s] || {}); });
+      try { window.tpcStock = detail; window.dispatchEvent(new CustomEvent('tpc-stock', { detail: detail })); } catch (e) { /* older browser: the tiles keep their fixed chips */ }
     }
 
     function fail() { msg.className = 'tpci-msg'; msg.textContent = 'The card list could not be loaded. Please try again later.'; }

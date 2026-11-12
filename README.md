@@ -30,3 +30,7 @@ A searchable card list: "Cards in stock" with a "Checked N min ago" note, a sear
 ```
 
 The list address is never stored in this repo: it is read from `data-src` on the mount div (or on the script tag) and must be `https://`. The preview page uses the sample list `Inventory/sample.json`, which has made-up prices. The list is JSON: `{"v":1,"at":<ms epoch>,"cards":[{"code","name","rarity","colour","set","stores":[{"store","cents","url"}]}]}` with stores `ebay`, `mercari`, `tcgplayer`, `cardtrader`, `cardnexus`; store links are only shown when they point at that store's own domain. Set `--bg` at the top of the CSS to your Carrd page background.
+
+### Live rarities on the Marketplaces tiles
+
+When the Inventory embed is on the same page, it announces which rarities each store has in stock (`window.tpcStock` and a `tpc-stock` event). The Marketplaces tiles then show those rarities instead of their fixed chips. Without the Inventory embed on the page, or if its list fails to load, the fixed chips stay. No change to either Carrd snippet is needed.
