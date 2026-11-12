@@ -31,6 +31,7 @@
   var COLOUR_ORDER = ['Red', 'Blue', 'Green', 'Purple', 'Colorless'];
   // Same order as the rarity guide on the Marketplaces embed: base rarities, then the special ones (rarest last).
   var RARITIES = ['C', 'U', 'R', 'RR', 'TSR', 'SR', 'OSR', 'SP', 'SSP'];
+  var RARITY_NAMES = { C: 'Common', U: 'Uncommon', R: 'Rare', RR: 'Double Rare', TSR: 'Trial Deck Super Rare', SR: 'Super Rare', OSR: 'OSR', SP: 'SP', SSP: 'SSP' };
   var SORTS = [
     ['code', 'Card number'],
     ['name', 'Name A to Z'],
@@ -76,6 +77,15 @@
 .tpci-nm{margin:0;font-weight:600;font-size:15px;line-height:1.3;overflow-wrap:anywhere}
 .tpci-cd{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;letter-spacing:.04em;color:var(--mu)}
 .tpci-r{display:inline-flex;align-items:center;justify-content:center;height:22px;padding:0 7px;border-radius:4px;background:rgba(201,169,97,.12);border:1px solid rgba(201,169,97,.22);color:var(--gl);font:600 11px/1 Inter,sans-serif;letter-spacing:.04em}
+.tpci-r-C{background:#2a2925;border-color:#55524a;color:#c9c4b6}
+.tpci-r-U{background:#1e2c22;border-color:#4f8a62;color:#9fdcb1}
+.tpci-r-R{background:#1c2836;border-color:#4b7fb5;color:#9ccbf5}
+.tpci-r-RR{background:#2a2038;border-color:#8a63c2;color:#cfb1f2}
+.tpci-r-TSR{background:#3a2c12;border-color:#c9a961;color:#f0d58f}
+.tpci-r-SR{background:#c9a961;border-color:#e3c893;color:#14110c}
+.tpci-r-OSR{background:#e08a3c;border-color:#f3b06e;color:#14110c}
+.tpci-r-SP{background:#e0607a;border-color:#f39ab0;color:#14110c}
+.tpci-r-SSP{background:#f0d58f;background:linear-gradient(90deg,#f39ab0,#f0d58f,#9fdcb1,#9ccbf5,#cfb1f2);border-color:#fff;color:#14110c}
 .tpci-mt{font-size:12px;color:var(--mu)}
 .tpci-by{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
 .tpci-by a{flex:1 1 118px;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:40px;padding:6px 12px;border:1px solid rgba(201,169,97,.45);border-radius:6px;background:rgba(201,169,97,.06);color:var(--tx);text-decoration:none;font:600 14px Inter,sans-serif;font-variant-numeric:tabular-nums}
@@ -271,7 +281,7 @@
       var info = el('div', 'tpci-in');
       var cd = el('div', 'tpci-cd');
       cd.appendChild(el('span', null, c.code));
-      if (c.rarity) cd.appendChild(el('span', 'tpci-r', c.rarity));
+      if (c.rarity) { var rc = el('span', 'tpci-r' + (RARITIES.indexOf(c.rarity) >= 0 ? ' tpci-r-' + c.rarity : ''), c.rarity); rc.title = RARITY_NAMES[c.rarity] || c.rarity; cd.appendChild(rc); }
       info.appendChild(cd);
       info.appendChild(el('p', 'tpci-nm', c.name));
       var meta = [c.colour, c.set].filter(Boolean).join(' · ');
