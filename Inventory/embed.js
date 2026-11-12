@@ -93,11 +93,13 @@
 .tpci-lo{display:flex;align-items:center;min-width:0}
 .tpci-lo svg{height:16px;width:auto;max-width:76px;display:block}
 .tpci-pr{color:var(--gl);white-space:nowrap}
-.tpci-more{display:block;margin:22px auto 0;padding:10px 26px;background:none;border:1px solid var(--g);border-radius:6px;color:var(--g);font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
-.tpci-more:hover,.tpci-more:active{background:rgba(201,169,97,.12);color:var(--gl)}
+.tpci-sc{max-height:min(78vh,920px);overflow-y:auto;padding:2px 8px 2px 2px;scrollbar-width:thin;scrollbar-color:rgba(201,169,97,.55) transparent}
+.tpci-sc:focus-visible{outline:2px solid var(--gl);outline-offset:2px}
+.tpci-sc::-webkit-scrollbar{width:8px}.tpci-sc::-webkit-scrollbar-thumb{background:rgba(201,169,97,.55);border-radius:4px}
+.tpci-fn{margin:26px auto 0;max-width:640px;padding-top:14px;border-top:1px solid rgba(201,169,97,.25);text-align:center;font-size:13px;line-height:1.55;color:var(--mu)}
 .tpci-msg{margin:18px 0;text-align:center;font-size:14px;line-height:1.5;color:var(--mu)}
 .tpci-hide{display:none!important}
-@media (prefers-reduced-motion:no-preference){.tpci-t,.tpci-by a,.tpci-more,.tpci-ct input,.tpci-ct select{transition:border-color .2s,background .2s,color .2s}}
+@media (prefers-reduced-motion:no-preference){.tpci-t,.tpci-by a,.tpci-ct input,.tpci-ct select{transition:border-color .2s,background .2s,color .2s}}
 @media (min-width:1240px){.tpci{max-width:none;width:min(1560px,calc(100vw - 64px));position:relative;left:50%;margin:0;-webkit-transform:translateX(-50%);transform:translateX(-50%)}}
 @media (max-width:900px){.tpci-ct{grid-template-columns:repeat(2,minmax(0,1fr))}.tpci-ct input{grid-column:1/-1}}
 @media (max-width:700px){
@@ -221,8 +223,8 @@
     root.appendChild(frame);
 
     var cards = [];
-    var shown = PAGE;
-    var q, colour, store, rarity, sort, count, clear, grid, more;
+    var shown = 0, current = [], curStore = '';
+    var q, colour, store, rarity, sort, count, clear, grid, box;
 
     function sel(label, first) {
       var n = el('select'); n.setAttribute('aria-label', label);
@@ -303,6 +305,15 @@
       return t;
     }
 
+    // The list scrolls inside its own box; the next cards are added as the reader nears the bottom.
+    function fill() {
+      var guard = 0;
+      do {
+        current.slice(shown, shown + PAGE).forEach(function (c) { grid.appendChild(tile(c, curStore)); });
+        shown = Math.min(current.length, shown + PAGE);
+      } while (shown < current.length && box.scrollHeight - box.scrollTop - box.clientHeight < 600 && ++guard < 50);
+    }
+
     function render() {
       var text = q.value.trim().toLowerCase();
       var ntext = norm(text);
@@ -313,8 +324,9 @@
       count.textContent = list.length + ' of ' + cards.length + ' cards';
       clear.className = 'tpci-clr' + (text || col || st || ra ? '' : ' tpci-hide');
       while (grid.firstChild) grid.removeChild(grid.firstChild);
-      list.slice(0, shown).forEach(function (c) { grid.appendChild(tile(c, st)); });
-      more.className = 'tpci-more' + (list.length > shown ? '' : ' tpci-hide');
+      current = list; curStore = st; shown = 0; box.scrollTop = 0;
+      fill();
+      box.className = 'tpci-sc' + (list.length ? '' : ' tpci-hide');
       msg.className = 'tpci-msg' + (list.length ? ' tpci-hide' : '');
       msg.textContent = 'No card matches. Clear the search to see everything.';
     }
@@ -348,19 +360,20 @@
       clear = el('button', 'tpci-clr', 'Clear filters'); clear.type = 'button';
       bar.appendChild(count); bar.appendChild(clear);
       grid = el('div', 'tpci-gr');
-      more = el('button', 'tpci-more', 'Show more'); more.type = 'button';
+      box = el('div', 'tpci-sc'); box.tabIndex = 0; box.setAttribute('role', 'region'); box.setAttribute('aria-label', 'Cards in stock');
+      box.appendChild(grid);
 
-      frame.insertBefore(ct, msg); frame.insertBefore(bar, msg); frame.insertBefore(grid, msg);
-      frame.appendChild(more);
+      frame.insertBefore(ct, msg); frame.insertBefore(bar, msg); frame.insertBefore(box, msg);
+      frame.appendChild(el('p', 'tpci-fn', 'Prices differ between stores mostly because each platform has its own fees and shipping costs. Please use whichever platform you are comfortable with!'));
 
-      var reset = function () { shown = PAGE; render(); };
+      var reset = function () { render(); };
       q.addEventListener('input', reset);
       [colour, store, rarity, sort].forEach(function (n) { n.addEventListener('change', reset); });
       clear.addEventListener('click', function () {
         q.value = ''; colour.value = ''; store.value = ''; rarity.value = '';
         reset(); q.focus();
       });
-      more.addEventListener('click', function () { shown += PAGE; render(); });
+      box.addEventListener('scroll', function () { if (shown < current.length) fill(); });
       render();
     }
 

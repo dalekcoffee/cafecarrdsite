@@ -22,7 +22,7 @@ Store tiles with platform logos and rarity chips, grouped into "Synced inventory
 
 ## Inventory
 
-A searchable card list: "Cards in stock" with a "Checked N min ago" note, a search box (card name or card number, so `075` or `ebp01 075` finds EBP01-075), filters for colour, store and rarity, a sort menu (card number, name, colour, rarity, store, price high to low or low to high), 24 cards per page with "Show more", and one button per store on each card with the platform logo and price. There is no checkout: each button opens that store's own page in a new tab. Card art comes from the official card art cache; if a picture does not load the card shows a plain frame.
+A searchable card list: "Cards in stock" with a "Checked N min ago" note, a search box (card name or card number, so `075` or `ebp01 075` finds EBP01-075), filters for colour, store and rarity, a sort menu (card number, name, colour, rarity, store, price high to low or low to high), a results box that scrolls on its own and adds cards as you near the bottom (no "Show more" button), a footnote on why prices differ between stores, and one button per store on each card with the platform logo and price. There is no checkout: each button opens that store's own page in a new tab. Card art comes from the official card art cache; if a picture does not load the card shows a plain frame.
 
 ```html
 <div id="tpc-inventory" data-src="LIST_ADDRESS"></div>
