@@ -87,16 +87,16 @@
 .tpc-lg{grid-template-columns:1fr;gap:10px;margin-top:22px}
 }
 @container tpc (max-width:520px){
-.tpc-gr,.tpc-gx .tpc-gr{grid-template-columns:minmax(0,1fr);gap:8px}
-.tpc-gp{padding:24px 12px 12px;margin-bottom:24px}.tpc-gh{font-size:19px;left:10px;padding:0 8px}.tpc-why{font-size:12px;margin-bottom:12px}
-.tpc-t{min-width:0;min-height:76px;padding:10px 12px;display:grid;grid-template-columns:84px minmax(0,1fr) 18px;grid-template-areas:"p m g";column-gap:12px;row-gap:5px;align-items:center}
-.tpc-p{grid-area:p;height:44px;width:84px;margin:0;align-self:center;justify-content:flex-start}
-.tpc-p svg{height:auto;max-height:30px;max-width:84px}
+.tpc-gr,.tpc-gx .tpc-gr{grid-template-columns:minmax(0,1fr);gap:6px}
+.tpc-gp{padding:18px 10px 10px;margin-bottom:18px}.tpc-gh{font-size:17px;left:10px;padding:0 8px}.tpc-gh svg{width:15px;height:15px}.tpc-why{font-size:11px;line-height:1.35;margin-bottom:8px}
+.tpc-t{min-width:0;min-height:0;padding:6px 10px;display:grid;grid-template-columns:72px minmax(0,1fr) 14px;grid-template-areas:"p m g";column-gap:10px;align-items:center}
+.tpc-p{grid-area:p;height:26px;width:72px;margin:0;padding:0;align-self:center;justify-content:flex-start}
+.tpc-p svg{height:auto;max-height:22px;max-width:72px}
 .tpc-m{grid-area:m;align-self:center;min-width:0}
-.tpc-d{gap:5px;margin:0;--rf:13px}.tpc-r{height:30px;padding:0 2px}.tpc-ll .tpc-r,.tpc-rg .tpc-r{height:22px;padding:0 6px;font-size:11px}.tpc-lg{grid-template-columns:1fr;gap:10px;font-size:12px;margin-top:22px}.tpc-lc{padding:14px}.tpc-lh span{font-size:18px}.tpc-ll{gap:6px}.tpc-lw{gap:10px}.tpc-lw li{align-items:flex-start;flex-direction:column;gap:5px}
-.tpc-g{grid-area:g}
-.tpc-g{margin:0;padding:0;font-size:0;align-self:center}
-.tpc-g:after{content:"\\2192";font-size:18px}
+.tpc-d{gap:4px;margin:0;--rf:12px}.tpc-r{height:24px;padding:0 2px}.tpc-none{font-size:12px}
+.tpc-ll .tpc-r,.tpc-rg .tpc-r{height:22px;padding:0 6px;font-size:11px}.tpc-lg{grid-template-columns:1fr;gap:10px;font-size:12px;margin-top:22px}.tpc-lc{padding:14px}.tpc-lh span{font-size:18px}.tpc-ll{gap:6px}.tpc-lw{gap:10px}.tpc-lw li{align-items:flex-start;flex-direction:column;gap:5px}
+.tpc-g{grid-area:g;position:static;margin:0;padding:0;font-size:0;line-height:1;align-self:center}
+.tpc-g:after{content:"\\2192";font-size:15px}
 }
 `;
 
