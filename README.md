@@ -22,7 +22,7 @@ Store tiles with platform logos and rarity chips, grouped into "Synced inventory
 
 ## Inventory
 
-A searchable card list: "Cards in stock" with a "Checked N min ago" note, a search box (card name or card number, so `075` or `ebp01 075` finds EBP01-075), filters for colour, store and rarity, a sort menu (card number, name, colour, rarity, store, price high to low or low to high), 24 cards per page with "Show more", and one button per store on each card with the platform logo and price. There is no checkout: each button opens that store's own page in a new tab. Card art comes from the official card art cache; if a picture does not load the card shows a plain frame.
+A searchable card list: "Cards in stock" with a "Checked N min ago" note, a search box (card name or card number, so `075` or `ebp01 075` finds EBP01-075), filters for colour, store and rarity, a sort menu (card number, name, colour, rarity, store, price high to low or low to high), a results box that scrolls on its own and adds cards as you near the bottom (no "Show more" button), a footnote on why prices differ between stores, and one button per store on each card with the platform logo and price. There is no checkout: each button opens that store's own page in a new tab. Card art comes from the official card art cache; if a picture does not load the card shows a plain frame.
 
 ```html
 <div id="tpc-inventory" data-src="LIST_ADDRESS"></div>
@@ -34,3 +34,11 @@ The list address is never stored in this repo: it is read from `data-src` on the
 ### Live rarities on the Marketplaces tiles
 
 When the Inventory embed is on the same page, it announces which rarities each store has in stock (`window.tpcStock` and a `tpc-stock` event). The Marketplaces tiles then show those rarities instead of their fixed chips. Without the Inventory embed on the page, or if its list fails to load, the fixed chips stay. No change to either Carrd snippet is needed.
+
+### Marketplaces in a narrow column
+
+The Marketplaces embed sizes itself to the column it sits in, not to the screen (CSS container queries).
+Above 760 px wide it is the full desktop layout; from 521 to 760 px (a hero column, for example) the tiles
+stay side by side with tighter padding, logos that shrink to fit and a one-line "Shop on" link; at 520 px
+and below each store becomes one row. The rarity chips always stay on one row: their text shrinks with the
+number of chips, and they only wrap when there are too many to read.

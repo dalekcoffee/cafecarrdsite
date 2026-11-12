@@ -15,7 +15,7 @@
   var FONTS = 'https://fonts.googleapis.com/css2?family=EB+Garamond:wght@600&family=Inter:wght@400;600&display=swap';
 
   var CSS = `
-.tpc{--bg:#14110c;--g:#c9a961;--gl:#e3c893;--pn:#1c1812;--ph:#221d15;--tx:#efe7d6;--mu:#a39a86;font-family:Inter,system-ui,sans-serif;color:var(--tx);max-width:1160px;margin:0 auto;text-align:left}
+.tpc{--bg:#14110c;--g:#c9a961;--gl:#e3c893;--pn:#1c1812;--ph:#221d15;--tx:#efe7d6;--mu:#a39a86;font-family:Inter,system-ui,sans-serif;color:var(--tx);max-width:1160px;margin:0 auto;text-align:left;container:tpc / inline-size}
 .tpc *{box-sizing:border-box}
 .tpc-gp{position:relative;margin:0 0 30px;padding:30px 22px 22px;border:1px solid rgba(201,169,97,.5);border-radius:10px}
 .tpc-gx{max-width:780px;margin-left:auto;margin-right:auto;border-style:dashed;border-color:rgba(239,231,214,.3)}
@@ -30,9 +30,10 @@
 .tpc-t:focus-visible{outline:2px solid var(--gl);outline-offset:3px}
 .tpc-p{align-self:flex-start;display:flex;align-items:center;height:48px;margin-bottom:6px;color:var(--tx)}
 .tpc-p svg{height:34px;width:auto;max-width:180px;display:block}
-.tpc-m{display:flex;flex-direction:column;gap:6px}
+.tpc-m{display:flex;flex-direction:column;gap:6px;container-type:inline-size}
 .tpc-n{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .tpc-d{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;margin-top:4px}.tpc-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.tpc-r{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 6px;border-radius:6px;background:rgba(201,169,97,.12);border:1px solid rgba(201,169,97,.22);color:var(--gl);font:600 15px/1 Inter,sans-serif;letter-spacing:.04em}
+.tpc-d .tpc-r{font-size:clamp(11px,calc(100cqw / var(--n,4) * .36),var(--rf,15px))}
 .tpc-r-C{background:#2a2925;border-color:#55524a;color:#c9c4b6}
 .tpc-r-U{background:#1e2c22;border-color:#4f8a62;color:#9fdcb1}
 .tpc-r-R{background:#1c2836;border-color:#4b7fb5;color:#9ccbf5}
@@ -42,7 +43,7 @@
 .tpc-r-OSR{background:#e08a3c;border-color:#f3b06e;color:#14110c}
 .tpc-r-SP{background:#e0607a;border-color:#f39ab0;color:#14110c}
 .tpc-r-SSP{background:#f0d58f;background:linear-gradient(90deg,#f39ab0,#f0d58f,#9fdcb1,#9ccbf5,#cfb1f2);border-color:#fff;color:#14110c}
-.tpc-d.tpc-live{display:flex;flex-wrap:wrap}.tpc-d.tpc-live .tpc-r{flex:1 1 44px;max-width:76px}
+.tpc-d.tpc-live{display:flex;flex-wrap:wrap}.tpc-d.tpc-live .tpc-r{flex:1 1 0;min-width:26px;max-width:76px}
 .tpc-none{font-size:13px;color:var(--mu)}
 .tpc-ll .tpc-r,.tpc-rg .tpc-r{height:26px;padding:0 9px;font-size:12px;border-radius:4px}
 .tpc-lg{margin:40px auto 0;max-width:960px;display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px;line-height:1.45;color:var(--mu)}
@@ -59,6 +60,7 @@
 .tpc-la{display:flex;justify-content:space-between;margin-top:12px;padding-top:8px;border-top:1px solid rgba(201,169,97,.25);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mu);position:relative}
 .tpc-la:after{content:"";position:absolute;right:0;top:-4px;width:7px;height:7px;border-top:1px solid rgba(201,169,97,.6);border-right:1px solid rgba(201,169,97,.6);transform:rotate(45deg)}
 .tpc-g{margin-top:auto;padding-top:12px;font:600 14px Inter,sans-serif;color:var(--g)}
+@supports not (container-type:inline-size){
 @media (max-width:700px){
 .tpc-gr,.tpc-gx .tpc-gr{grid-template-columns:minmax(0,1fr);gap:8px}
 .tpc-gp{padding:24px 12px 12px;margin-bottom:24px}.tpc-gh{font-size:19px;left:10px;padding:0 8px}.tpc-why{font-size:12px;margin-bottom:12px}
@@ -67,6 +69,29 @@
 .tpc-p svg{height:auto;max-height:30px;max-width:84px}
 .tpc-m{grid-area:m;align-self:center;min-width:0}
 .tpc-d{gap:5px;margin:0}.tpc-r{height:30px;padding:0 2px;font-size:13px}.tpc-ll .tpc-r,.tpc-rg .tpc-r{height:22px;padding:0 6px;font-size:11px}.tpc-lg{grid-template-columns:1fr;gap:10px;font-size:12px;margin-top:22px}.tpc-lc{padding:14px}.tpc-lh span{font-size:18px}.tpc-ll{gap:6px}.tpc-lw{gap:10px}.tpc-lw li{align-items:flex-start;flex-direction:column;gap:5px}
+.tpc-g{grid-area:g}
+.tpc-g{margin:0;padding:0;font-size:0;align-self:center}
+.tpc-g:after{content:"\\2192";font-size:18px}
+}
+}
+@container tpc (max-width:760px){
+.tpc-gp{padding:26px 14px 14px;margin-bottom:24px}.tpc-gh{font-size:20px;left:12px;padding:0 10px}.tpc-why{font-size:12px;margin-bottom:12px}
+.tpc-gr{gap:10px}
+.tpc-t{min-width:0;min-height:0;padding:16px 14px;gap:8px}
+.tpc-p{align-self:stretch;height:40px;margin-bottom:2px}
+.tpc-p svg{height:auto;max-height:30px;max-width:100%}
+.tpc-d{gap:5px;--rf:13px}.tpc-r{height:28px;padding:0 2px;letter-spacing:.02em}
+.tpc-g{padding-top:8px;font-size:13px;white-space:nowrap}
+.tpc-lg{grid-template-columns:1fr;gap:10px;margin-top:22px}
+}
+@container tpc (max-width:520px){
+.tpc-gr,.tpc-gx .tpc-gr{grid-template-columns:minmax(0,1fr);gap:8px}
+.tpc-gp{padding:24px 12px 12px;margin-bottom:24px}.tpc-gh{font-size:19px;left:10px;padding:0 8px}.tpc-why{font-size:12px;margin-bottom:12px}
+.tpc-t{min-width:0;min-height:76px;padding:10px 12px;display:grid;grid-template-columns:84px minmax(0,1fr) 18px;grid-template-areas:"p m g";column-gap:12px;row-gap:5px;align-items:center}
+.tpc-p{grid-area:p;height:44px;width:84px;margin:0;align-self:center;justify-content:flex-start}
+.tpc-p svg{height:auto;max-height:30px;max-width:84px}
+.tpc-m{grid-area:m;align-self:center;min-width:0}
+.tpc-d{gap:5px;margin:0;--rf:13px}.tpc-r{height:30px;padding:0 2px}.tpc-ll .tpc-r,.tpc-rg .tpc-r{height:22px;padding:0 6px;font-size:11px}.tpc-lg{grid-template-columns:1fr;gap:10px;font-size:12px;margin-top:22px}.tpc-lc{padding:14px}.tpc-lh span{font-size:18px}.tpc-ll{gap:6px}.tpc-lw{gap:10px}.tpc-lw li{align-items:flex-start;flex-direction:column;gap:5px}
 .tpc-g{grid-area:g}
 .tpc-g{margin:0;padding:0;font-size:0;align-self:center}
 .tpc-g:after{content:"\\2192";font-size:18px}
@@ -177,6 +202,7 @@
       var sr = document.createElement('span'); sr.className = 'tpc-sr'; sr.textContent = list.length ? 'Rarities in stock: ' : '';
       row.appendChild(sr);
       row.className = 'tpc-d tpc-live';
+      row.style.setProperty('--n', String(list.length || 1));
       if (!list.length) { var none = document.createElement('span'); none.className = 'tpc-none'; none.textContent = 'Nothing listed right now'; row.appendChild(none); continue; }
       list.forEach(function (r) {
         var chip = document.createElement('span');
@@ -187,6 +213,8 @@
     }
   }
   function live(root) {
+    var fixed = root.querySelectorAll('.tpc-t .tpc-d'); // chip text sizes itself to the number of chips in the row
+    for (var i = 0; i < fixed.length; i++) fixed[i].style.setProperty('--n', String(fixed[i].querySelectorAll('.tpc-r').length || 1));
     if (window.tpcStock) paint(root, window.tpcStock);
     window.addEventListener('tpc-stock', function (e) { paint(root, e && e.detail); });
   }
