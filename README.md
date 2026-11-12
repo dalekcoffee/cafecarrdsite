@@ -39,6 +39,12 @@ When the Inventory embed is on the same page, it announces which rarities each s
 
 The Marketplaces embed sizes itself to the column it sits in, not to the screen (CSS container queries).
 Above 760 px wide it is the full desktop layout; from 521 to 760 px (a hero column, for example) the tiles
-stay side by side with tighter padding, logos that shrink to fit and a one-line "Shop on" link; at 520 px
+stay side by side in a slim form (small logo, small chips, an arrow in the corner in place of the "Shop on" line); at 520 px
 and below each store becomes one row. The rarity chips always stay on one row: their text shrinks with the
 number of chips, and they only wrap when there are too many to read.
+
+### Rarity guide
+
+The rarity guide is one lean row at the top of the Inventory embed, above the search, and lists only the
+rarities in stock. The Marketplaces embed no longer shows the big guide; add `data-guide="on"` to its
+`tpc-markets` div to bring it back there.

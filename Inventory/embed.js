@@ -86,6 +86,10 @@
 .tpci-r-OSR{background:#e08a3c;border-color:#f3b06e;color:#14110c}
 .tpci-r-SP{background:#e0607a;border-color:#f39ab0;color:#14110c}
 .tpci-r-SSP{background:#f0d58f;background:linear-gradient(90deg,#f39ab0,#f0d58f,#9fdcb1,#9ccbf5,#cfb1f2);border-color:#fff;color:#14110c}
+.tpci-gd{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:0 0 14px;padding:0;list-style:none;font-size:12px;line-height:1.3;color:var(--mu)}
+.tpci-gd li{display:inline-flex;align-items:center;gap:6px}
+.tpci-gd .tpci-r{height:20px;padding:0 6px;font-size:10px}
+.tpci-gk{font:600 10px/1 Inter,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--g)}
 .tpci-mt{font-size:12px;color:var(--mu)}
 .tpci-by{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}
 .tpci-by a{flex:1 1 118px;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:40px;padding:6px 12px;border:1px solid rgba(201,169,97,.45);border-radius:6px;background:rgba(201,169,97,.06);color:var(--tx);text-decoration:none;font:600 14px Inter,sans-serif;font-variant-numeric:tabular-nums}
@@ -351,6 +355,15 @@
       var known = RARITIES.filter(function (r) { return present[r]; });
       var other = Object.keys(present).filter(function (r) { return RARITIES.indexOf(r) < 0; }).sort();
       known.concat(other).forEach(function (r) { opt(rarity, r, r); });
+      // Lean rarity guide: one row, only the rarities in stock that have a full name; the parallels share one label.
+      var gd = el('ul', 'tpci-gd');
+      var key = el('li', 'tpci-gk', 'Rarity guide'); gd.appendChild(key);
+      var chip = function (r) { return el('span', 'tpci-r tpci-r-' + r, r); };
+      known.filter(function (r) { return RARITY_NAMES[r] !== r; }).forEach(function (r) {
+        var li = el('li'); li.appendChild(chip(r)); li.appendChild(document.createTextNode(RARITY_NAMES[r])); gd.appendChild(li);
+      });
+      var par = known.filter(function (r) { return RARITY_NAMES[r] === r; });
+      if (par.length) { var pl = el('li'); par.forEach(function (r) { pl.appendChild(chip(r)); }); pl.appendChild(document.createTextNode('Parallel chase cards')); gd.appendChild(pl); }
       sort = sel('Sort by');
       SORTS.forEach(function (x) { opt(sort, x[0], 'Sort: ' + x[1]); });
       [q, colour, store, rarity, sort].forEach(function (n) { ct.appendChild(n); });
@@ -363,6 +376,7 @@
       box = el('div', 'tpci-sc'); box.tabIndex = 0; box.setAttribute('role', 'region'); box.setAttribute('aria-label', 'Cards in stock');
       box.appendChild(grid);
 
+      if (gd.children.length > 1) frame.insertBefore(gd, msg);
       frame.insertBefore(ct, msg); frame.insertBefore(bar, msg); frame.insertBefore(box, msg);
       frame.appendChild(el('p', 'tpci-fn', 'Prices differ between stores mostly because each platform has its own fees and shipping costs. Please use whichever platform you are comfortable with!'));
 
