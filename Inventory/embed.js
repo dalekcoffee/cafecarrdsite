@@ -88,6 +88,7 @@
 .tpci-msg{margin:18px 0;text-align:center;font-size:14px;line-height:1.5;color:var(--mu)}
 .tpci-hide{display:none!important}
 @media (prefers-reduced-motion:no-preference){.tpci-t,.tpci-by a,.tpci-more,.tpci-ct input,.tpci-ct select{transition:border-color .2s,background .2s,color .2s}}
+@media (min-width:1240px){.tpci{max-width:none;width:min(1560px,calc(100vw - 64px));position:relative;left:50%;margin:0;-webkit-transform:translateX(-50%);transform:translateX(-50%)}}
 @media (max-width:900px){.tpci-ct{grid-template-columns:repeat(2,minmax(0,1fr))}.tpci-ct input{grid-column:1/-1}}
 @media (max-width:700px){
 .tpci-fr{padding:28px 12px 14px}.tpci-hd{font-size:19px;left:10px;padding:0 8px}
