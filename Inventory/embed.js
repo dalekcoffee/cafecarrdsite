@@ -104,7 +104,6 @@
 .tpci-msg{margin:18px 0;text-align:center;font-size:14px;line-height:1.5;color:var(--mu)}
 .tpci-hide{display:none!important}
 @media (prefers-reduced-motion:no-preference){.tpci-t,.tpci-by a,.tpci-ct input,.tpci-ct select{transition:border-color .2s,background .2s,color .2s}}
-@media (min-width:1240px){.tpci{max-width:none;width:min(1560px,calc(100vw - 64px));position:relative;left:50%;margin:0;-webkit-transform:translateX(-50%);transform:translateX(-50%)}}
 @media (max-width:900px){.tpci-ct{grid-template-columns:repeat(2,minmax(0,1fr))}.tpci-ct input{grid-column:1/-1}}
 @media (max-width:700px){
 .tpci-fr{padding:28px 12px 14px}.tpci-hd{font-size:19px;left:10px;padding:0 8px}
@@ -113,7 +112,7 @@
 .tpci-by{gap:6px}.tpci-by a{flex:1 1 calc(50% - 3px);min-width:0;min-height:32px;padding:4px 8px;gap:6px;font-size:13px}.tpci-lo svg{height:13px;max-width:58px}
 .tpci-gd{gap:5px 10px;margin-bottom:10px;font-size:11px}
 }
-.tpci-fade{opacity:0}.tpci-fade.tpci-in{opacity:1;transition:opacity 1s ease 1s}
+.tpci-fade{opacity:0}.tpci-fade.tpci-seen{opacity:1;transition:opacity 1s ease 1s}
 `;
 
   var script = document.currentScript;
@@ -204,11 +203,71 @@
       root.classList.add('tpci-fade');
       var io = new IntersectionObserver(function (entries) {
         for (var i = 0; i < entries.length; i++) {
-          if (entries[i].isIntersecting) { root.classList.add('tpci-in'); io.disconnect(); return; }
+          if (entries[i].isIntersecting) { root.classList.add('tpci-seen'); io.disconnect(); return; }
         }
       }, { rootMargin: '0px 0px -12% 0px' });
       io.observe(root);
     } catch (e) { root.classList.remove('tpci-fade'); }
+  }
+
+  // From 1240 px screen width the list takes the width and position of the page section that holds the
+  // Marketplaces embed: the highest block around it that is still narrower than the page. Below that, or on
+  // any failure, the natural layout of its own column stays.
+  var FIT_PROPS = ['width', 'maxWidth', 'position', 'left', 'margin'];
+  function unfit(root) {
+    for (var i = 0; i < FIT_PROPS.length; i++) {
+      if (root.style[FIT_PROPS[i]]) root.style[FIT_PROPS[i]] = '';
+    }
+  }
+  function setStyle(root, k, v) { if (root.style[k] !== v) root.style[k] = v; }
+  function fit(root) {
+    try {
+      var doc = document.documentElement;
+      if (window.innerWidth < 1240) { unfit(root); return; }
+      var pageW = doc.clientWidth;
+      var ref = document.getElementById('tpc-markets') || root;
+      var pick = null, n = ref.parentElement;
+      while (n && n !== document.body && n !== doc) {
+        if (n.getBoundingClientRect().width < pageW - 2) pick = n;
+        else if (pick) break;
+        n = n.parentElement;
+      }
+      var left, width;
+      if (pick) {
+        var r = pick.getBoundingClientRect(), cs = window.getComputedStyle(pick);
+        var pl = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.borderLeftWidth) || 0);
+        var pr = (parseFloat(cs.paddingRight) || 0) + (parseFloat(cs.borderRightWidth) || 0);
+        left = r.left + pl; width = r.width - pl - pr;
+      } else { left = 32; width = pageW - 64; }
+      left = Math.round(left + (window.pageXOffset || 0)); width = Math.round(width);
+      var par = root.parentElement;
+      if (par) {
+        var pc = window.getComputedStyle(par), pw = par.getBoundingClientRect().width -
+          (parseFloat(pc.paddingLeft) || 0) - (parseFloat(pc.paddingRight) || 0) -
+          (parseFloat(pc.borderLeftWidth) || 0) - (parseFloat(pc.borderRightWidth) || 0);
+        if (width < pw) { unfit(root); return; }
+      }
+      setStyle(root, 'maxWidth', 'none'); setStyle(root, 'margin', '0');
+      setStyle(root, 'position', 'relative'); setStyle(root, 'width', width + 'px');
+      setStyle(root, 'left', '0px');
+      var cur = root.getBoundingClientRect().left + (window.pageXOffset || 0);
+      setStyle(root, 'left', Math.round(left - cur) + 'px');
+    } catch (e) { try { unfit(root); } catch (e2) {} }
+  }
+  function watchFit(root) {
+    var queued = false;
+    function run() {
+      if (queued) return;
+      queued = true;
+      var go = function () { queued = false; fit(root); };
+      if (window.requestAnimationFrame) window.requestAnimationFrame(go); else setTimeout(go, 16);
+    }
+    try {
+      fit(root);
+      window.addEventListener('resize', run);
+      window.addEventListener('load', run);
+      if (window.ResizeObserver) new ResizeObserver(run).observe(document.documentElement);
+    } catch (e) {}
   }
 
   function mount() {
@@ -235,6 +294,7 @@
     var SRC = root.getAttribute('data-src') || (script && script.getAttribute('data-src')) || '';
     root.className = 'tpci';
     fadeIn(root);
+    watchFit(root);
 
     var frame = el('section', 'tpci-fr');
     frame.setAttribute('aria-labelledby', 'tpci-h');

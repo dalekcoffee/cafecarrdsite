@@ -43,6 +43,12 @@ stay side by side in a slim form (small logo, small chips, an arrow in the corne
 and below each store becomes one row. The rarity chips always stay on one row: their text shrinks with the
 number of chips, and they only wrap when there are too many to read.
 
+### Card list width on desktop
+
+From 1240 px screen width the card list matches the width and position of the page section that holds the
+Marketplaces embed (the widest block around it that is still narrower than the page), so both line up.
+Below that it follows its own column. Without the Marketplaces embed it fills the section it sits in.
+
 ### Rarity guide
 
 The rarity guide is one lean row at the top of the Inventory embed, above the search, and lists only the
