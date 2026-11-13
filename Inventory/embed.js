@@ -210,43 +210,83 @@
     } catch (e) { root.classList.remove('tpci-fade'); }
   }
 
-  // From 1240 px screen width the list takes the width and position of the page section that holds the
-  // Marketplaces embed: the highest block around it that is still narrower than the page. Below that, or on
-  // any failure, the natural layout of its own column stays.
+  // From 737 px screen width (above phone size) the list lines up with the row that holds the Marketplaces embed: from the left
+  // edge of that row's content to the right edge of what sits beside it (a logo for example). Without the
+  // Marketplaces embed, below that width, or on any failure, the natural layout of its own column stays.
   var FIT_PROPS = ['width', 'maxWidth', 'position', 'left', 'margin'];
+  var MEDIA = { img: 1, svg: 1, video: 1, canvas: 1, picture: 1, iframe: 1 };
   function unfit(root) {
     for (var i = 0; i < FIT_PROPS.length; i++) {
       if (root.style[FIT_PROPS[i]]) root.style[FIT_PROPS[i]] = '';
     }
   }
   function setStyle(root, k, v) { if (root.style[k] !== v) root.style[k] = v; }
+  function rendered(el) {
+    var r = el.getBoundingClientRect();
+    if (!(r.width > 1 && r.height > 1)) return null;
+    var cs = window.getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || cs.position === 'fixed' || cs.position === 'absolute') return null;
+    return r;
+  }
+  function hasText(el) {
+    for (var c = el.firstChild; c; c = c.nextSibling) {
+      if (c.nodeType === 3 && /\S/.test(c.nodeValue)) return true;
+    }
+    return false;
+  }
+  function addRect(box, r) {
+    if (!(r.width > 0 && r.height > 0)) return;
+    if (!box) return { l: r.left, r: r.right };
+    return { l: Math.min(box.l, r.left), r: Math.max(box.r, r.right) };
+  }
+  // Left and right edge of what a block really shows: pictures, text and the Marketplaces embed.
+  function contentBox(child, ref) {
+    var box = null, tag = child.tagName.toLowerCase();
+    if (MEDIA[tag] || child === ref) return addRect(null, child.getBoundingClientRect());
+    var all = child.getElementsByTagName('*');
+    for (var i = 0; i < all.length; i++) {
+      var el = all[i], t = el.tagName.toLowerCase();
+      if (t === 'script' || t === 'style') continue;
+      if (el !== ref && ref.contains(el)) continue;
+      if (MEDIA[t] || el === ref || hasText(el)) box = addRect(box, el.getBoundingClientRect()) || box;
+    }
+    return box || addRect(null, child.getBoundingClientRect());
+  }
   function fit(root) {
     try {
       var doc = document.documentElement;
-      if (window.innerWidth < 1240) { unfit(root); return; }
+      if (window.innerWidth < 737) { unfit(root); return; }
       var pageW = doc.clientWidth;
-      var ref = document.getElementById('tpc-markets') || root;
-      var pick = null, n = ref.parentElement;
-      while (n && n !== document.body && n !== doc) {
-        if (n.getBoundingClientRect().width < pageW - 2) pick = n;
-        else if (pick) break;
-        n = n.parentElement;
+      var ref = document.getElementById('tpc-markets');
+      if (!ref) { unfit(root); return; }
+      // The row is the first block above the embed that has something rendered beside the branch holding it.
+      var row = null, child = ref, n = ref.parentElement;
+      while (n && n !== document.body && n !== doc && !row) {
+        var cr = child.getBoundingClientRect();
+        for (var k = n.firstElementChild; k; k = k.nextElementSibling) {
+          if (k === child) continue;
+          var r = rendered(k);
+          if (r && (r.left >= cr.right - 1 || r.right <= cr.left + 1) && r.top < cr.bottom && cr.top < r.bottom) { row = n; break; }
+        }
+        child = n; n = n.parentElement;
       }
-      var left, width;
-      if (pick) {
-        var r = pick.getBoundingClientRect(), cs = window.getComputedStyle(pick);
-        var pl = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.borderLeftWidth) || 0);
-        var pr = (parseFloat(cs.paddingRight) || 0) + (parseFloat(cs.borderRightWidth) || 0);
-        left = r.left + pl; width = r.width - pl - pr;
-      } else { left = 32; width = pageW - 64; }
-      left = Math.round(left + (window.pageXOffset || 0)); width = Math.round(width);
-      var par = root.parentElement;
-      if (par) {
-        var pc = window.getComputedStyle(par), pw = par.getBoundingClientRect().width -
-          (parseFloat(pc.paddingLeft) || 0) - (parseFloat(pc.paddingRight) || 0) -
-          (parseFloat(pc.borderLeftWidth) || 0) - (parseFloat(pc.borderRightWidth) || 0);
-        if (width < pw) { unfit(root); return; }
+      var lo, hi;
+      if (row) {
+        var box = null;
+        for (var j = row.firstElementChild; j; j = j.nextElementSibling) {
+          if (!rendered(j)) continue;
+          var b = contentBox(j, ref);
+          if (b) box = box ? { l: Math.min(box.l, b.l), r: Math.max(box.r, b.r) } : b;
+        }
+        if (!box) { unfit(root); return; }
+        lo = box.l; hi = box.r;
+      } else {
+        var rr = ref.getBoundingClientRect();
+        lo = rr.left; hi = rr.right;
       }
+      lo = Math.max(lo, 16); hi = Math.min(hi, pageW - 16);
+      var left = Math.round(lo + (window.pageXOffset || 0)), width = Math.round(hi - lo);
+      if (width < 320) { unfit(root); return; }
       setStyle(root, 'maxWidth', 'none'); setStyle(root, 'margin', '0');
       setStyle(root, 'position', 'relative'); setStyle(root, 'width', width + 'px');
       setStyle(root, 'left', '0px');
