@@ -45,9 +45,9 @@ number of chips, and they only wrap when there are too many to read.
 
 ### Card list width on desktop
 
-From 1240 px screen width the card list matches the width and position of the page section that holds the
-Marketplaces embed (the widest block around it that is still narrower than the page), so both line up.
-Below that it follows its own column. Without the Marketplaces embed it fills the section it sits in.
+From 737 px screen width (above phone size) the card list lines up with the row that holds the Marketplaces embed, from the left
+edge of that row's content to the right edge of what sits beside it (a logo for example). Below that it follows
+its own column, and without the Marketplaces embed on the page it keeps its own column too.
 
 ### Rarity guide
 
