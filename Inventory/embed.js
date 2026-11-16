@@ -16,6 +16,8 @@
   // --bg (first line of CSS) must match the Carrd page background so the frame title cuts the border cleanly.
   var FONTS = 'https://fonts.googleapis.com/css2?family=EB+Garamond:wght@600&family=Inter:wght@400;600&display=swap';
   var ART = 'https://resopal-proxy.dalek.workers.dev/img/';
+  var OFFICIAL_ART = 'https://en.palworld-official-cardgame.com/wordpress/wp-content/images/cardlist/';
+  var FOLDERS = ['EBP01', 'EBP02', 'EBP03', 'ETD01', 'ETD02', 'ETD03', 'PR'];
   var PAGE = 24;
   var MAX_CARDS = 5000;
 
@@ -406,13 +408,17 @@
       var art = el('div', 'tpci-art');
       if (c.colour) art.style.setProperty('--c', COLOURS[c.colour]);
       var img = el('img'); img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
-      // The official site lists some sets under an English "E" code (SOUL-011 is ESOUL-011, PR-xxx is EPR-xxx): retry once with it.
-      var tried = false;
+      // The picture proxy only finds cards whose folder on the official site matches their set (BP01-031 is EBP01/EBP01-031.png). A card printed in another
+      // set's folder (SOUL-011 is EBP02/ESOUL-011.png, promos are PR/) gets a JSON error from it, so on a failure try the official site's own file in each folder.
+      var urls = [ART + encodeURIComponent(c.code) + '.png?src=official'];
+      for (var f = 0; f < FOLDERS.length; f++) urls.push(OFFICIAL_ART + FOLDERS[f] + '/' + encodeURIComponent('E' + c.code) + '.png');
+      var at = 0;
       img.onerror = function () {
-        if (!tried && c.code.charAt(0) !== 'E') { tried = true; img.src = ART + encodeURIComponent('E' + c.code) + '.png?src=official'; return; }
+        at++;
+        if (at < urls.length) { img.src = urls[at]; return; }
         if (img.parentNode) img.parentNode.removeChild(img);
       };
-      img.src = ART + encodeURIComponent(c.code) + '.png?src=official';
+      img.src = urls[0];
       art.appendChild(img);
       var info = el('div', 'tpci-in');
       var cd = el('div', 'tpci-cd');
