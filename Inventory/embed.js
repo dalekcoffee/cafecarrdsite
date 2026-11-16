@@ -406,7 +406,12 @@
       var art = el('div', 'tpci-art');
       if (c.colour) art.style.setProperty('--c', COLOURS[c.colour]);
       var img = el('img'); img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
-      img.onerror = function () { if (img.parentNode) img.parentNode.removeChild(img); };
+      // The official site lists some sets under an English "E" code (SOUL-011 is ESOUL-011, PR-xxx is EPR-xxx): retry once with it.
+      var tried = false;
+      img.onerror = function () {
+        if (!tried && c.code.charAt(0) !== 'E') { tried = true; img.src = ART + encodeURIComponent('E' + c.code) + '.png?src=official'; return; }
+        if (img.parentNode) img.parentNode.removeChild(img);
+      };
       img.src = ART + encodeURIComponent(c.code) + '.png?src=official';
       art.appendChild(img);
       var info = el('div', 'tpci-in');
