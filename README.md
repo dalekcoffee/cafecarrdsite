@@ -22,7 +22,7 @@ Store tiles with platform logos and rarity chips, in two rows (Mercari, eBay; th
 
 ## Inventory
 
-A searchable card list: "Cards in stock" with a "Checked N min ago" note, a search box (card name or card number, so `075` or `ebp01 075` finds EBP01-075), filters for colour, store and rarity, a sort menu (card number, name, colour, rarity, store, price high to low or low to high), a results box that scrolls on its own and adds cards as you near the bottom (no "Show more" button), a footnote on why prices differ between stores, and one button per store on each card with the platform logo and price. There is no checkout: each button opens that store's own page in a new tab. Card art comes from the official card art cache; if a picture does not load the card shows a plain frame.
+A searchable card list: "Cards in stock" with a "Checked N min ago" note, a search box (card name or card number, so `075` or `ebp01 075` finds EBP01-075), filters for color, set, store and rarity, a sort menu (card number, name, color, set, rarity, store, price high to low or low to high), a results box that scrolls on its own and adds cards as you near the bottom (no "Show more" button), a footnote on why prices differ between stores, and one button per store on each card with the platform logo and price. There is no checkout: each button opens that store's own page in a new tab. Card art comes from the official card art cache; if a picture does not load the card shows a plain frame.
 
 ```html
 <div id="tpc-inventory" data-src="LIST_ADDRESS"></div>
@@ -62,7 +62,7 @@ long after a 1 s delay, not replayed). Readers who ask for reduced motion see th
 
 ### Zoom view
 
-Each card in the Inventory list opens an enlarged view when you click it (or focus it and press Enter or Space): a bigger picture, the card number, rarity tag, name, colour and set, and the same store buttons at a larger size. The store buttons on the card still go straight to the store in a new tab and never open the zoom. Close it with the × button, a click outside, or Esc; focus returns to the card. The picture uses the same official art through the proxy (ESOUL name first).
+Each card in the Inventory list opens an enlarged view when you click it (or focus it and press Enter or Space): a bigger picture, the card number, rarity tag, name, color and set, and the same store buttons at a larger size. The store buttons on the card still go straight to the store in a new tab and never open the zoom. Close it with the × button, a click outside, or Esc; focus returns to the card. The picture uses the same official art through the proxy (ESOUL name first).
 
 ### Rarity order and the SSS tag
 
