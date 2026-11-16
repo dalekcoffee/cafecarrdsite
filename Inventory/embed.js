@@ -37,7 +37,8 @@
     ['rarity', 'Rarity (highest first)'],
     ['code', 'Card number'],
     ['name', 'Name A to Z'],
-    ['colour', 'Colour'],
+    ['colour', 'Color'],
+    ['set', 'Set'],
     ['store', 'Store'],
     ['high', 'Price: high to low'],
     ['low', 'Price: low to high']
@@ -58,7 +59,7 @@
 .tpci-fr{position:relative;padding:34px 22px 22px;border:1px solid rgba(201,169,97,.5);border-radius:10px}
 .tpci-hd{position:absolute;top:0;left:18px;transform:translateY(-50%);margin:0;padding:0 12px;background:var(--bg,#14110c);font-family:'EB Garamond',Georgia,serif;font-weight:600;font-size:22px;line-height:1.2;color:var(--g)}
 .tpci-st{margin:0 0 14px;font-size:12px;color:var(--mu)}
-.tpci-ct{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr)) minmax(0,1.5fr);gap:8px}
+.tpci-ct{display:grid;grid-template-columns:minmax(0,2.2fr) repeat(4,minmax(0,1fr)) minmax(0,1.4fr);gap:8px}
 .tpci-ct input,.tpci-ct select{width:100%;min-width:0;height:42px;padding:0 12px;background:var(--pn);color:var(--tx);border:1px solid rgba(201,169,97,.45);border-radius:6px;font:400 16px Inter,system-ui,sans-serif}
 .tpci-ct select{padding:0 4px 0 8px}
 .tpci-ct input::placeholder{color:var(--mu);opacity:1}
@@ -109,7 +110,7 @@
 .tpci-msg{margin:18px 0;text-align:center;font-size:14px;line-height:1.5;color:var(--mu)}
 .tpci-hide{display:none!important}
 @media (prefers-reduced-motion:no-preference){.tpci-t,.tpci-by a,.tpci-ct input,.tpci-ct select{transition:border-color .2s,background .2s,color .2s}}
-@media (max-width:900px){.tpci-ct{grid-template-columns:repeat(2,minmax(0,1fr))}.tpci-ct input{grid-column:1/-1}}
+@media (max-width:900px){.tpci-ct{grid-template-columns:repeat(2,minmax(0,1fr))}.tpci-ct input,.tpci-ct select:last-child{grid-column:1/-1}}
 @media (max-width:700px){
 .tpci-fr{padding:28px 12px 14px}.tpci-hd{font-size:19px;left:10px;padding:0 8px}
 .tpci-gr{grid-template-columns:minmax(0,1fr);gap:10px}
@@ -373,7 +374,7 @@
 
     var cards = [];
     var shown = 0, current = [], curStore = '';
-    var q, colour, store, rarity, sort, count, clear, grid, box;
+    var q, colour, set, store, rarity, sort, count, clear, grid, box;
 
     function sel(label, first) {
       var n = el('select'); n.setAttribute('aria-label', label);
@@ -397,8 +398,9 @@
       return ORDER.indexOf(best.store);
     }
 
-    function matches(c, text, ntext, tokens, col, st, ra) {
+    function matches(c, text, ntext, tokens, col, st, ra, se) {
       if (col && c.colour !== col) return false;
+      if (se && c.set !== se) return false;
       if (ra && c.rarity !== ra) return false;
       if (st && !c.stores.some(function (x) { return x.store === st; })) return false;
       if (!text) return true;
@@ -413,6 +415,7 @@
         var r = 0;
         if (mode === 'name') r = cmpText(a.name, b.name);
         else if (mode === 'colour') r = (a.colour ? COLOUR_ORDER.indexOf(a.colour) : 9) - (b.colour ? COLOUR_ORDER.indexOf(b.colour) : 9);
+        else if (mode === 'set') r = (a.set ? 0 : 1) - (b.set ? 0 : 1) || cmpText(a.set, b.set);
         else if (mode === 'rarity') r = rarityRank(b.rarity) - rarityRank(a.rarity);
         else if (mode === 'store') r = cheapStore(a, st) - cheapStore(b, st);
         else if (mode === 'high') r = priceOf(b, st) - priceOf(a, st);
@@ -551,11 +554,11 @@
       var text = q.value.trim().toLowerCase();
       var ntext = norm(text);
       var tokens = text.split(/\s+/).filter(Boolean).map(function (t) { return norm(t) || t; });
-      var col = colour.value, st = store.value, ra = rarity.value;
-      var list = cards.filter(function (c) { return matches(c, text, ntext, tokens, col, st, ra); });
+      var col = colour.value, se = set.value, st = store.value, ra = rarity.value;
+      var list = cards.filter(function (c) { return matches(c, text, ntext, tokens, col, st, ra, se); });
       list.sort(sorter(sort.value, st));
       count.textContent = list.length + ' of ' + cards.length + ' cards';
-      clear.className = 'tpci-clr' + (text || col || st || ra ? '' : ' tpci-hide');
+      clear.className = 'tpci-clr' + (text || col || se || st || ra ? '' : ' tpci-hide');
       while (grid.firstChild) grid.removeChild(grid.firstChild);
       current = list; curStore = st; shown = 0; box.scrollTop = 0;
       fill();
@@ -574,8 +577,13 @@
       q = el('input'); q.type = 'search'; q.placeholder = 'Search name or card number';
       q.setAttribute('aria-label', 'Search by card name or card number');
       q.setAttribute('autocomplete', 'off');
-      colour = sel('Colour', 'All colours');
+      colour = sel('Color', 'All colors');
       COLOUR_ORDER.forEach(function (x) { opt(colour, x, x); });
+      // Sets in stock, in card-number order (BP01 before BP02, PR, SOUL, TD01)
+      set = sel('Set', 'All sets');
+      var sets = {};
+      cards.forEach(function (c) { if (c.set) sets[c.set] = 1; });
+      Object.keys(sets).sort(cmpText).forEach(function (x) { opt(set, x, x); });
       store = sel('Store', 'All stores');
       ORDER.forEach(function (x) { opt(store, x, STORES[x][0]); });
       rarity = sel('Rarity', 'All rarities');
@@ -595,7 +603,7 @@
       if (par.length) { var pl = el('li'); par.forEach(function (r) { pl.appendChild(chip(r)); }); pl.appendChild(document.createTextNode('Parallel chase cards')); gd.appendChild(pl); }
       sort = sel('Sort by');
       SORTS.forEach(function (x) { opt(sort, x[0], 'Sort: ' + x[1]); });
-      [q, colour, store, rarity, sort].forEach(function (n) { ct.appendChild(n); });
+      [q, colour, set, store, rarity, sort].forEach(function (n) { ct.appendChild(n); });
 
       var bar = el('div', 'tpci-bar');
       count = el('span', null, ''); count.setAttribute('aria-live', 'polite');
@@ -612,9 +620,9 @@
 
       var reset = function () { render(); };
       q.addEventListener('input', reset);
-      [colour, store, rarity, sort].forEach(function (n) { n.addEventListener('change', reset); });
+      [colour, set, store, rarity, sort].forEach(function (n) { n.addEventListener('change', reset); });
       clear.addEventListener('click', function () {
-        q.value = ''; colour.value = ''; store.value = ''; rarity.value = '';
+        q.value = ''; colour.value = ''; set.value = ''; store.value = ''; rarity.value = '';
         reset(); q.focus();
       });
       box.addEventListener('scroll', function () { if (shown < current.length) fill(); });
