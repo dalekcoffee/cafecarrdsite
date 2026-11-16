@@ -406,13 +406,16 @@
       var art = el('div', 'tpci-art');
       if (c.colour) art.style.setProperty('--c', COLOURS[c.colour]);
       var img = el('img'); img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
-      // The official site lists some sets under an English "E" code (SOUL-011 is ESOUL-011, PR-xxx is EPR-xxx): retry once with it.
-      var tried = false;
+      // The official site's names carry a leading E (SOUL-011 is ESOUL-011): ask the proxy for that name first, then the plain code.
+      var urls = c.code.charAt(0) === 'E' ? [c.code] : ['E' + c.code, c.code];
+      var at = 0;
+      var artUrl = function (code) { return ART + encodeURIComponent(code) + '.png?src=official'; };
       img.onerror = function () {
-        if (!tried && c.code.charAt(0) !== 'E') { tried = true; img.src = ART + encodeURIComponent('E' + c.code) + '.png?src=official'; return; }
+        at++;
+        if (at < urls.length) { img.src = artUrl(urls[at]); return; }
         if (img.parentNode) img.parentNode.removeChild(img);
       };
-      img.src = ART + encodeURIComponent(c.code) + '.png?src=official';
+      img.src = artUrl(urls[0]);
       art.appendChild(img);
       var info = el('div', 'tpci-in');
       var cd = el('div', 'tpci-cd');
