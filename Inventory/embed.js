@@ -29,14 +29,15 @@
   var ORDER = ['ebay', 'mercari', 'tcgplayer', 'cardtrader', 'cardnexus'];
   var COLOURS = { Red: '#e06a6a', Blue: '#6aa8e0', Green: '#7cc98a', Purple: '#b38be0', Colorless: '#b9bfd0' };
   var COLOUR_ORDER = ['Red', 'Blue', 'Green', 'Purple', 'Colorless'];
-  // Same order as the rarity guide on the Marketplaces embed: base rarities, then the special ones (rarest last).
-  var RARITIES = ['C', 'U', 'R', 'RR', 'TSR', 'SR', 'OSR', 'SP', 'SSP'];
-  var RARITY_NAMES = { C: 'Common', U: 'Uncommon', R: 'Rare', RR: 'Double Rare', TSR: 'Trial Deck Super Rare', SR: 'Super Rare', OSR: 'OSR', SP: 'SP', SSP: 'SSP' };
+  // Lowest to highest. OSR and TSR share a tier, and so do TD and S; the sort uses TIER, the menus use this order.
+  var RARITIES = ['TD', 'S', 'C', 'U', 'R', 'PR', 'RR', 'TSR', 'OSR', 'SR', 'SP', 'SSP', 'TSP', 'SSS'];
+  var TIER = { TD: 0, S: 0, C: 1, U: 2, R: 3, PR: 4, RR: 5, TSR: 6, OSR: 6, SR: 7, SP: 8, SSP: 9, TSP: 10, SSS: 11 };
+  var RARITY_NAMES = { C: 'Common', U: 'Uncommon', R: 'Rare', RR: 'Double Rare', TSR: 'Trial Deck Super Rare', SR: 'Super Rare', OSR: 'OSR', SP: 'SP', SSP: 'SSP', TSP: 'TSP', SSS: 'SSS' };
   var SORTS = [
+    ['rarity', 'Rarity (highest first)'],
     ['code', 'Card number'],
     ['name', 'Name A to Z'],
     ['colour', 'Colour'],
-    ['rarity', 'Rarity (highest first)'],
     ['store', 'Store'],
     ['high', 'Price: high to low'],
     ['low', 'Price: low to high']
@@ -86,6 +87,10 @@
 .tpci-r-OSR{background:#e08a3c;border-color:#f3b06e;color:#14110c}
 .tpci-r-SP{background:#e0607a;border-color:#f39ab0;color:#14110c}
 .tpci-r-SSP{background:#f0d58f;background:linear-gradient(90deg,#f39ab0,#f0d58f,#9fdcb1,#9ccbf5,#cfb1f2);border-color:#fff;color:#14110c}
+/* SSS: gold foil. The gradient drifts and the glow breathes; both stop for readers who ask for reduced motion. */
+.tpci-r-SSS{position:relative;background:#e3c893;background:linear-gradient(115deg,#c99a2e 0%,#f6e3a1 24%,#fffbe6 40%,#e8bd4e 58%,#fff0b8 76%,#c99a2e 100%);background-size:240% 100%;background-position:0 0;border-color:#fff6d0;color:#2a1c04;font-weight:800;text-shadow:0 1px 0 rgba(255,255,255,.45);box-shadow:0 0 0 1px rgba(255,246,208,.55),0 0 10px rgba(243,213,120,.55)}
+.tpci-r-TSP{background:#f0d58f;background:linear-gradient(90deg,#d9a0a8,#f0d58f);border-color:#fff;color:#14110c}
+@media (prefers-reduced-motion:no-preference){.tpci-r-SSS{animation:tpcifoil 3.4s ease-in-out infinite alternate}@keyframes tpcifoil{0%{background-position:0 0;box-shadow:0 0 0 1px rgba(255,246,208,.55),0 0 6px rgba(243,213,120,.35)}100%{background-position:100% 0;box-shadow:0 0 0 1px rgba(255,246,208,.8),0 0 16px rgba(255,226,140,.85)}}}
 .tpci-gd{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin:0 0 14px;padding:0;list-style:none;font-size:12px;line-height:1.3;color:var(--mu)}
 .tpci-gd li{display:inline-flex;align-items:center;gap:6px}
 .tpci-gd .tpci-r{height:20px;padding:0 6px;font-size:10px}
@@ -192,7 +197,7 @@
     return 'Checked ' + Math.round(mins / 60) + ' h ago';
   }
 
-  function rarityRank(r) { var i = RARITIES.indexOf(r); return r ? i : -2; }
+  function rarityRank(r) { return !r ? -2 : Object.prototype.hasOwnProperty.call(TIER, r) ? TIER[r] : -1; }
 
 
   // Fade in like the rest of the Carrd page: "On Visible", Fade In, 1 s long after a 1 s delay, once.
@@ -479,7 +484,7 @@
       var gd = el('ul', 'tpci-gd');
       var key = el('li', 'tpci-gk', 'Rarity guide'); gd.appendChild(key);
       var chip = function (r) { return el('span', 'tpci-r tpci-r-' + r, r); };
-      known.filter(function (r) { return RARITY_NAMES[r] !== r; }).forEach(function (r) {
+      known.filter(function (r) { return RARITY_NAMES[r] && RARITY_NAMES[r] !== r; }).forEach(function (r) {
         var li = el('li'); li.appendChild(chip(r)); li.appendChild(document.createTextNode(RARITY_NAMES[r])); gd.appendChild(li);
       });
       var par = known.filter(function (r) { return RARITY_NAMES[r] === r; });

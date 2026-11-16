@@ -59,3 +59,7 @@ rarities in stock. The Marketplaces embed no longer shows the big guide; add `da
 
 Both embeds fade in the way the rest of the Carrd page does (Carrd's "On Visible" animation: Fade In, 1 s
 long after a 1 s delay, not replayed). Readers who ask for reduced motion see the embeds at once.
+
+### Rarity order and the SSS tag
+
+The Inventory list opens sorted by rarity, highest first: SSS, TSP, SSP, SP, OSR / TSR, SR, RR, PR, R, U, C, TD / S (the order of PalVault's rarity floors). The sort menu still changes it. SSS has a gold foil tag whose shine drifts and whose glow pulses; for readers who ask for reduced motion it stays still. No change to either Carrd snippet is needed: the embeds load `embed.js` from GitHub Pages, and browsers may keep the old script for about 10 minutes after the merge.

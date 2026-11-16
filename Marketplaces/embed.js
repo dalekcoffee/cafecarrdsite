@@ -44,6 +44,10 @@
 .tpc-r-OSR{background:#e08a3c;border-color:#f3b06e;color:#14110c}
 .tpc-r-SP{background:#e0607a;border-color:#f39ab0;color:#14110c}
 .tpc-r-SSP{background:#f0d58f;background:linear-gradient(90deg,#f39ab0,#f0d58f,#9fdcb1,#9ccbf5,#cfb1f2);border-color:#fff;color:#14110c}
+/* SSS: gold foil. The gradient drifts and the glow breathes; both stop for readers who ask for reduced motion. */
+.tpc-r-SSS{position:relative;background:#e3c893;background:linear-gradient(115deg,#c99a2e 0%,#f6e3a1 24%,#fffbe6 40%,#e8bd4e 58%,#fff0b8 76%,#c99a2e 100%);background-size:240% 100%;background-position:0 0;border-color:#fff6d0;color:#2a1c04;font-weight:800;text-shadow:0 1px 0 rgba(255,255,255,.45);box-shadow:0 0 0 1px rgba(255,246,208,.55),0 0 10px rgba(243,213,120,.55)}
+.tpc-r-TSP{background:#f0d58f;background:linear-gradient(90deg,#d9a0a8,#f0d58f);border-color:#fff;color:#14110c}
+@media (prefers-reduced-motion:no-preference){.tpc-r-SSS{animation:tpcfoil 3.4s ease-in-out infinite alternate}@keyframes tpcfoil{0%{background-position:0 0;box-shadow:0 0 0 1px rgba(255,246,208,.55),0 0 6px rgba(243,213,120,.35)}100%{background-position:100% 0;box-shadow:0 0 0 1px rgba(255,246,208,.8),0 0 16px rgba(255,226,140,.85)}}}
 .tpc-d.tpc-live{display:flex;flex-wrap:wrap}.tpc-d.tpc-live .tpc-r{flex:1 1 0;min-width:26px;max-width:76px}
 .tpc-none{font-size:13px;color:var(--mu)}
 .tpc-ll .tpc-r,.tpc-rg .tpc-r{height:26px;padding:0 9px;font-size:12px;border-radius:4px}
@@ -209,7 +213,7 @@
   // Live rarities: the Inventory embed on the same page announces which rarities each store has in stock
   // (window.tpcStock + a "tpc-stock" event). Each tile then shows those instead of its fixed chips.
   // With no Inventory embed on the page, or if its list fails to load, the fixed chips stay.
-  var RARITIES = ['C', 'U', 'R', 'RR', 'TSR', 'SR', 'OSR', 'SP', 'SSP'];
+  var RARITIES = ['TD', 'S', 'C', 'U', 'R', 'PR', 'RR', 'TSR', 'OSR', 'SR', 'SP', 'SSP', 'TSP', 'SSS'];
   function paint(root, detail) {
     if (!detail || !detail.stores || typeof detail.stores !== 'object') return;
     var rows = root.querySelectorAll('[data-tpc-store]');
