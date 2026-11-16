@@ -62,7 +62,7 @@
   {
    "code": "EBP01-012",
    "name": "Foxparks",
-   "rarity": "RR",
+   "rarity": "TSP",
    "colour": "Colorless",
    "set": "EBP01",
    "stores": [
@@ -158,7 +158,7 @@
   {
    "code": "EBP01-024",
    "name": "Rooby",
-   "rarity": "SSP",
+   "rarity": "SSS",
    "colour": "Blue",
    "set": "EBP01",
    "stores": [
@@ -211,7 +211,7 @@
   {
    "code": "EBP01-030",
    "name": "Jolthog",
-   "rarity": "C",
+   "rarity": "PR",
    "colour": "Green",
    "set": "EBP01",
    "stores": [
@@ -379,7 +379,7 @@
   {
    "code": "EBP01-051",
    "name": "Tanzee Ex",
-   "rarity": "SSP",
+   "rarity": "SSS",
    "colour": "Purple",
    "set": "EBP01",
    "stores": [
