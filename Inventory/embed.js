@@ -117,6 +117,26 @@
 .tpci-by{gap:6px}.tpci-by a{flex:1 1 calc(50% - 3px);min-width:0;min-height:32px;padding:4px 8px;gap:6px;font-size:13px}.tpci-lo svg{height:13px;max-width:58px}
 .tpci-gd{gap:5px 10px;margin-bottom:10px;font-size:11px}
 }
+.tpci-t{cursor:pointer}
+.tpci-t:focus-visible{outline:2px solid var(--gl);outline-offset:2px}
+.tpci-by a{cursor:pointer}
+.tpci-ov{--g:#c9a961;--gl:#e3c893;--pn:#1c1812;--tx:#efe7d6;--mu:#a39a86;position:fixed;top:0;right:0;bottom:0;left:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(8,6,3,.86);font-family:Inter,system-ui,sans-serif;color:var(--tx);overflow-y:auto;-webkit-overflow-scrolling:touch}
+.tpci-ov *{box-sizing:border-box}
+.tpci-md{position:relative;display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:28px;width:100%;max-width:820px;margin:auto;padding:28px;background:#14110c;border:1px solid rgba(201,169,97,.6);border-radius:10px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.tpci-md .tpci-art{width:100%;border-width:3px}
+.tpci-md .tpci-in{gap:12px}
+.tpci-md .tpci-nm{font-family:'EB Garamond',Georgia,serif;font-size:30px;line-height:1.2}
+.tpci-md .tpci-cd{font-size:14px}
+.tpci-md .tpci-r{height:26px;padding:0 10px;font-size:13px}
+.tpci-md .tpci-mt{font-size:14px}
+.tpci-md .tpci-by{width:100%;flex-direction:column;gap:10px;margin-top:6px}
+.tpci-md .tpci-by a{flex:0 0 auto;width:100%;min-height:52px;padding:8px 16px;font-size:17px}
+.tpci-md .tpci-lo svg{height:22px;max-width:110px}
+.tpci-x{position:absolute;top:8px;right:8px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;padding:0;background:rgba(201,169,97,.08);border:1px solid rgba(201,169,97,.45);border-radius:6px;color:var(--tx);font:400 26px/1 Inter,sans-serif;cursor:pointer}
+.tpci-x:hover,.tpci-x:active{border-color:var(--g);background:rgba(201,169,97,.2)}
+.tpci-ov button:focus-visible,.tpci-ov a:focus-visible{outline:2px solid var(--gl);outline-offset:2px}
+.tpci-lock{overflow:hidden!important}
+@media (max-width:700px){.tpci-md{grid-template-columns:minmax(0,1fr);gap:16px;padding:52px 16px 18px}.tpci-md .tpci-art{width:min(100%,300px);margin:0 auto}.tpci-md .tpci-nm{font-size:24px}}
 .tpci-fade{opacity:0}.tpci-fade.tpci-seen{opacity:1;transition:opacity 1s ease 1s}
 `;
 
@@ -401,30 +421,33 @@
       };
     }
 
-    function tile(c, st) {
-      var t = el('article', 'tpci-t');
-      var art = el('div', 'tpci-art');
-      if (c.colour) art.style.setProperty('--c', COLOURS[c.colour]);
-      var img = el('img'); img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
-      // The official site's names carry a leading E (SOUL-011 is ESOUL-011): ask the proxy for that name first, then the plain code.
-      var urls = c.code.charAt(0) === 'E' ? [c.code] : ['E' + c.code, c.code];
+    // The official site's names carry a leading E (SOUL-011 is ESOUL-011): ask the proxy for that name first, then the plain code.
+    function artImg(code, lazy) {
+      var img = el('img'); img.decoding = 'async'; img.alt = '';
+      if (lazy) img.loading = 'lazy';
+      var urls = code.charAt(0) === 'E' ? [code] : ['E' + code, code];
       var at = 0;
-      var artUrl = function (code) { return ART + encodeURIComponent(code) + '.png?src=official'; };
+      var artUrl = function (cd) { return ART + encodeURIComponent(cd) + '.png?src=official'; };
       img.onerror = function () {
         at++;
         if (at < urls.length) { img.src = artUrl(urls[at]); return; }
         if (img.parentNode) img.parentNode.removeChild(img);
       };
       img.src = artUrl(urls[0]);
-      art.appendChild(img);
-      var info = el('div', 'tpci-in');
-      var cd = el('div', 'tpci-cd');
-      cd.appendChild(el('span', null, c.code));
-      if (c.rarity) { var rc = el('span', 'tpci-r' + (RARITIES.indexOf(c.rarity) >= 0 ? ' tpci-r-' + c.rarity : ''), c.rarity); rc.title = RARITY_NAMES[c.rarity] || c.rarity; cd.appendChild(rc); }
-      info.appendChild(cd);
-      info.appendChild(el('p', 'tpci-nm', c.name));
-      var meta = [c.colour, c.set].filter(Boolean).join(' · ');
-      if (meta) info.appendChild(el('span', 'tpci-mt', meta));
+      return img;
+    }
+    function artBox(c, lazy) {
+      var art = el('div', 'tpci-art');
+      if (c.colour) art.style.setProperty('--c', COLOURS[c.colour]);
+      art.appendChild(artImg(c.code, lazy));
+      return art;
+    }
+    function rarityChip(c) {
+      var rc = el('span', 'tpci-r' + (RARITIES.indexOf(c.rarity) >= 0 ? ' tpci-r-' + c.rarity : ''), c.rarity);
+      rc.title = RARITY_NAMES[c.rarity] || c.rarity;
+      return rc;
+    }
+    function buyLinks(c, st) {
       var by = el('div', 'tpci-by');
       var stores = c.stores.slice();
       if (st) stores.sort(function (a, b) { return (b.store === st) - (a.store === st); });
@@ -438,8 +461,81 @@
         a.appendChild(el('span', 'tpci-pr', money(x.cents)));
         by.appendChild(a);
       });
-      t.appendChild(art); t.appendChild(info); t.appendChild(by);
+      return by;
+    }
+    function cardInfo(c, st) {
+      var info = el('div', 'tpci-in');
+      var cd = el('div', 'tpci-cd');
+      cd.appendChild(el('span', null, c.code));
+      if (c.rarity) cd.appendChild(rarityChip(c));
+      info.appendChild(cd);
+      info.appendChild(el('p', 'tpci-nm', c.name));
+      var meta = [c.colour, c.set].filter(Boolean).join(' \u00b7 ');
+      if (meta) info.appendChild(el('span', 'tpci-mt', meta));
+      return info;
+    }
+
+    function tile(c, st) {
+      var t = el('article', 'tpci-t');
+      t.tabIndex = 0; t.setAttribute('role', 'button');
+      t.setAttribute('aria-haspopup', 'dialog');
+      t.setAttribute('aria-label', 'Enlarge ' + c.name + ', ' + c.code);
+      t.appendChild(artBox(c, true)); t.appendChild(cardInfo(c, st)); t.appendChild(buyLinks(c, st));
+      t.__c = c;
       return t;
+    }
+
+    // Zoom view: a bigger picture with readable details and the same store links. Opens from a tile click or Enter / Space on the tile;
+    // clicks on the store links go to the store and never open it. Esc, the close button or a click outside closes it.
+    var zoom = null;
+    function closeZoom() {
+      if (!zoom) return;
+      var z = zoom; zoom = null;
+      document.removeEventListener('keydown', z.key, true);
+      if (z.ov.parentNode) z.ov.parentNode.removeChild(z.ov);
+      document.documentElement.classList.remove('tpci-lock');
+      if (z.from && z.from.focus && document.body.contains(z.from)) { try { z.from.focus({ preventScroll: true }); } catch (e) { z.from.focus(); } }
+    }
+    function openZoom(c, from) {
+      closeZoom();
+      var ov = el('div', 'tpci-ov');
+      var md = el('div', 'tpci-md');
+      md.setAttribute('role', 'dialog'); md.setAttribute('aria-modal', 'true'); md.setAttribute('aria-label', c.name);
+      var x = el('button', 'tpci-x', '\u00d7'); x.type = 'button'; x.setAttribute('aria-label', 'Close');
+      md.appendChild(artBox(c, false));
+      var side = cardInfo(c, curStore);
+      side.appendChild(buyLinks(c, curStore));
+      md.appendChild(side); md.appendChild(x);
+      ov.appendChild(md);
+      var key = function (e) {
+        if (e.key === 'Escape' || e.key === 'Esc') { e.preventDefault(); e.stopPropagation(); closeZoom(); return; }
+        if (e.key !== 'Tab') return;
+        var f = md.querySelectorAll('a[href],button');
+        if (!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if (!md.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+        else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      };
+      ov.addEventListener('click', function (e) { if (e.target === ov || e.target === x) closeZoom(); });
+      document.addEventListener('keydown', key, true);
+      zoom = { ov: ov, key: key, from: from };
+      document.documentElement.classList.add('tpci-lock');
+      document.body.appendChild(ov);
+      x.focus();
+    }
+    // One listener for every tile. A click that lands on (or inside) a store link is left alone so the link works as a link.
+    function onTile(e) {
+      var n = e.target;
+      if (!n || !n.closest) return;
+      if (n.closest('a')) return;
+      var t = n.closest('.tpci-t');
+      if (!t || !t.__c || !grid.contains(t)) return;
+      if (e.type === 'keydown') {
+        if (n !== t || (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar')) return;
+        e.preventDefault();
+      }
+      openZoom(t.__c, t);
     }
 
     // The list scrolls inside its own box; the next cards are added as the reader nears the bottom.
@@ -508,6 +604,7 @@
       grid = el('div', 'tpci-gr');
       box = el('div', 'tpci-sc'); box.tabIndex = 0; box.setAttribute('role', 'region'); box.setAttribute('aria-label', 'Cards in stock');
       box.appendChild(grid);
+      grid.addEventListener('click', onTile); grid.addEventListener('keydown', onTile);
 
       if (gd.children.length > 1) frame.insertBefore(gd, msg);
       frame.insertBefore(ct, msg); frame.insertBefore(bar, msg); frame.insertBefore(box, msg);
