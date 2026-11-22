@@ -962,5 +962,232 @@
     }
    ]
   }
+ ],
+ "sealed": [
+  {
+   "product": 900001,
+   "name": "Palworld TCG Booster Box Dawn of Palpagos",
+   "kind": "box",
+   "set": "EBP01",
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 14999,
+     "url": "https://www.ebay.com/itm/sealed1"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 13499,
+     "url": "https://www.tcgplayer.com/product/900001"
+    }
+   ]
+  },
+  {
+   "product": 900002,
+   "name": "Palworld TCG Booster Box Wild Frontier",
+   "kind": "box",
+   "set": "EBP02",
+   "stores": [
+    {
+     "store": "mercari",
+     "cents": 15500,
+     "url": "https://www.mercari.com/us/item/sealed2"
+    }
+   ]
+  },
+  {
+   "product": 900003,
+   "name": "Palworld TCG Trial Deck Red and Blue",
+   "kind": "deck",
+   "set": "ETD01",
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 1899,
+     "url": "https://www.ebay.com/itm/sealed3"
+    },
+    {
+     "store": "mercari",
+     "cents": 1750,
+     "url": "https://www.mercari.com/us/item/sealed3"
+    },
+    {
+     "store": "tcgplayer",
+     "cents": 1650,
+     "url": "https://www.tcgplayer.com/product/900003"
+    }
+   ]
+  },
+  {
+   "product": 900004,
+   "name": "Palworld TCG Trial Deck Green and Purple",
+   "kind": "deck",
+   "set": "ETD02",
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 1999,
+     "url": "https://www.ebay.com/itm/sealed4"
+    }
+   ]
+  },
+  {
+   "product": 900005,
+   "name": "Palworld TCG Promo Card Pack Vol. 1",
+   "kind": "promo",
+   "set": "",
+   "stores": [
+    {
+     "store": "mercari",
+     "cents": 599,
+     "url": "https://www.mercari.com/us/item/sealed5"
+    }
+   ]
+  },
+  {
+   "product": 900006,
+   "name": "Palworld TCG Booster Pack Dawn of Palpagos",
+   "kind": "pack",
+   "set": "EBP01",
+   "grams": 14.32,
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 549,
+     "url": "https://www.ebay.com/itm/sealed10"
+    },
+    {
+     "store": "mercari",
+     "cents": 649,
+     "url": "https://www.mercari.com/us/item/sealed10"
+    }
+   ]
+  },
+  {
+   "product": 900006,
+   "name": "Palworld TCG Booster Pack Dawn of Palpagos",
+   "kind": "pack",
+   "set": "EBP01",
+   "grams": 14.9,
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 549,
+     "url": "https://www.ebay.com/itm/sealed11"
+    }
+   ]
+  },
+  {
+   "product": 900006,
+   "name": "Palworld TCG Booster Pack Dawn of Palpagos",
+   "kind": "pack",
+   "set": "EBP01",
+   "grams": 15.32,
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 599,
+     "url": "https://www.ebay.com/itm/sealed12"
+    }
+   ]
+  },
+  {
+   "product": 900006,
+   "name": "Palworld TCG Booster Pack Dawn of Palpagos",
+   "kind": "pack",
+   "set": "EBP01",
+   "grams": 15.41,
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 599,
+     "url": "https://www.ebay.com/itm/sealed13"
+    },
+    {
+     "store": "mercari",
+     "cents": 699,
+     "url": "https://www.mercari.com/us/item/sealed13"
+    }
+   ]
+  },
+  {
+   "product": 900006,
+   "name": "Palworld TCG Booster Pack Dawn of Palpagos",
+   "kind": "pack",
+   "set": "EBP01",
+   "grams": 15.9,
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 649,
+     "url": "https://www.ebay.com/itm/sealed14"
+    }
+   ]
+  },
+  {
+   "product": 900006,
+   "name": "Palworld TCG Booster Pack Dawn of Palpagos",
+   "kind": "pack",
+   "set": "EBP01",
+   "grams": 16.25,
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 699,
+     "url": "https://www.ebay.com/itm/sealed15"
+    }
+   ]
+  },
+  {
+   "product": 900006,
+   "name": "Palworld TCG Booster Pack Dawn of Palpagos",
+   "kind": "pack",
+   "set": "EBP01",
+   "grams": 16.8,
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 749,
+     "url": "https://www.ebay.com/itm/sealed16"
+    },
+    {
+     "store": "mercari",
+     "cents": 849,
+     "url": "https://www.mercari.com/us/item/sealed16"
+    }
+   ]
+  },
+  {
+   "product": 900006,
+   "name": "Palworld TCG Booster Pack Dawn of Palpagos",
+   "kind": "pack",
+   "set": "EBP01",
+   "grams": 17.1,
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 899,
+     "url": "https://www.ebay.com/itm/sealed17"
+    }
+   ]
+  },
+  {
+   "product": 900007,
+   "name": "Palworld TCG Booster Pack Wild Frontier",
+   "kind": "pack",
+   "set": "EBP02",
+   "stores": [
+    {
+     "store": "ebay",
+     "cents": 499,
+     "url": "https://www.ebay.com/itm/sealed30"
+    },
+    {
+     "store": "cardtrader",
+     "cents": 480,
+     "url": "https://www.cardtrader.com/en-US/cards/sealed30"
+    }
+   ]
+  }
  ]
 }

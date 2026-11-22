@@ -18,6 +18,10 @@
   var ART = 'https://resopal-proxy.dalek.workers.dev/img/';
   var PAGE = 24;
   var MAX_CARDS = 5000;
+  var MAX_SEALED = 1000;
+  // Sealed product (boxes, decks, packs) has no card art: its picture is the product picture on TCGplayer's own image host, built from the product number in the list.
+  // If it does not load, the tile keeps a plain frame with the product type in words.
+  var SEALED_ART = 'https://product-images.tcgplayer.com/fit-in/437x437/';
 
   var STORES = {
     ebay: ['eBay', 'ebay.com'],
@@ -33,6 +37,18 @@
   var RARITIES = ['TD', 'S', 'C', 'U', 'R', 'PR', 'RR', 'TSR', 'OSR', 'SR', 'SP', 'SSP', 'TSP', 'SSS'];
   var TIER = { TD: 0, S: 0, C: 1, U: 2, R: 3, PR: 4, RR: 5, TSR: 6, OSR: 6, SR: 7, SP: 8, SSP: 9, TSP: 10, SSS: 11 };
   var RARITY_NAMES = { C: 'Common', U: 'Uncommon', R: 'Rare', RR: 'Double Rare', TSR: 'Trial Deck Super Rare', SR: 'Super Rare', OSR: 'OSR', SP: 'SP', SSP: 'SSP', TSP: 'TSP', SSS: 'SSS' };
+  var KINDS = { box: 'Booster box', deck: 'Trial deck', pack: 'Booster pack', promo: 'Promo pack' };
+  var KIND_ORDER = ['box', 'deck', 'pack', 'promo'];
+  var SEALED_SORTS = [
+    ['set', 'Set'],
+    ['type', 'Type'],
+    ['light', 'Weight: light to heavy'],
+    ['heavy', 'Weight: heavy to light'],
+    ['name', 'Name A to Z'],
+    ['store', 'Store'],
+    ['high', 'Price: high to low'],
+    ['low', 'Price: low to high']
+  ];
   var SORTS = [
     ['rarity', 'Rarity (highest first)'],
     ['code', 'Card number'],
@@ -138,6 +154,17 @@
 .tpci-ov button:focus-visible,.tpci-ov a:focus-visible{outline:2px solid var(--gl);outline-offset:2px}
 .tpci-lock{overflow:hidden!important}
 @media (max-width:700px){.tpci-md{grid-template-columns:minmax(0,1fr);gap:16px;padding:52px 16px 18px}.tpci-md .tpci-art{width:min(100%,300px);margin:0 auto}.tpci-md .tpci-nm{font-size:24px}}
+.tpci-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.tpci-tab{flex:0 1 auto;min-height:40px;padding:0 16px;background:var(--pn);color:var(--mu);border:1px solid rgba(201,169,97,.45);border-radius:6px;font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
+.tpci-tab:hover,.tpci-tab:active{border-color:var(--g);color:var(--tx)}
+.tpci-tab[aria-pressed="true"]{background:rgba(201,169,97,.16);border-color:var(--g);color:var(--gl)}
+.tpci-art-s{align-self:start}
+.tpci-art-s:before{padding-top:100%}
+.tpci-ph{position:absolute;top:0;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;padding:4px;text-align:center;font:600 10px/1.2 Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--mu)}
+.tpci-md .tpci-ph{font-size:14px}
+.tpci-k{background:rgba(201,169,97,.12);border-color:rgba(201,169,97,.4);color:var(--gl)}
+.tpci-w{font-size:12px;color:var(--gl);font-variant-numeric:tabular-nums}
+.tpci-md .tpci-w{font-size:14px}
 .tpci-fade{opacity:0}.tpci-fade.tpci-seen{opacity:1;transition:opacity 1s ease 1s}
 `;
 
@@ -173,6 +200,60 @@
     return !h || h === 'localhost' || h === '127.0.0.1' || h === 'github.io' || h.slice(-10) === '.github.io';
   }
 
+  // A card's or product's stores from allowed fields only: a known store, a link on that store's own domain, a whole-cent price. Sorted in the fixed store order.
+  function cleanStores(src) {
+    var stores = [], seen = {};
+    src = Array.isArray(src) ? src : [];
+    for (var j = 0; j < src.length; j++) {
+      var s = src[j];
+      var url = s && !seen[s.store] && safeUrl(s.store, s.url);
+      if (url && typeof s.cents === 'number' && s.cents >= 1 && s.cents <= 10000000 && Math.floor(s.cents) === s.cents) {
+        seen[s.store] = 1;
+        stores.push({ store: s.store, cents: s.cents, url: url });
+      }
+    }
+    stores.sort(function (a, b) { return ORDER.indexOf(a.store) - ORDER.indexOf(b.store); });
+    return stores;
+  }
+
+  // Sealed product (the list's `sealed` part), same rule: allowed fields only. A weight is kept only as a number of grams and is always shown as approximate.
+  function cleanSealed(data) {
+    var out = [];
+    var list = data && Array.isArray(data.sealed) ? data.sealed : [];
+    for (var i = 0; i < list.length && out.length < MAX_SEALED; i++) {
+      var c = list[i];
+      if (!c || typeof c.name !== 'string' || !Object.prototype.hasOwnProperty.call(KINDS, c.kind)) continue;
+      var pid = c.product;
+      if (typeof pid !== 'number' || pid < 1 || pid > 1e12 || Math.floor(pid) !== pid) continue;
+      var name = c.name.replace(/[\u0000-\u001f\u007f]/g, '').slice(0, 120);
+      var stores = cleanStores(c.stores);
+      if (!name || !stores.length) continue;
+      out.push({
+        sealed: true,
+        pid: pid,
+        code: 'S' + pid,
+        name: name,
+        lname: name.toLowerCase(),
+        kind: c.kind,
+        set: typeof c.set === 'string' && /^[A-Z0-9]{2,10}$/.test(c.set) ? c.set : '',
+        grams: typeof c.grams === 'number' && c.grams >= 0.01 && c.grams <= 1000 ? c.grams : null,
+        stores: stores
+      });
+    }
+    return out;
+  }
+  function gramsText(g) { return 'approx. ' + g.toFixed(2) + ' g'; }
+  // Weight filter steps from the weights in stock: whole-gram steps, at most 6 of them. -> [{ from, to, label }] (a weight w is in a step when from <= w < to)
+  function weightSteps(items) {
+    var g = items.filter(function (x) { return x.grams != null; }).map(function (x) { return x.grams; });
+    if (!g.length) return [];
+    var lo = Math.floor(Math.min.apply(null, g)), hi = Math.floor(Math.max.apply(null, g)) + 1;
+    var step = Math.max(1, Math.ceil((hi - lo) / 6));
+    var out = [];
+    for (var a = lo; a < hi; a += step) { var b = Math.min(a + step, hi); out.push({ from: a, to: b, label: 'Approx. ' + a + ' to ' + b + ' g' }); }
+    return out;
+  }
+
   // Rebuild the list from allowed fields only; anything unexpected is dropped.
   function clean(data) {
     var out = [];
@@ -182,18 +263,8 @@
       if (!c || typeof c.code !== 'string' || !/^[A-Z0-9-]{3,31}$/.test(c.code) || typeof c.name !== 'string') continue;
       var name = c.name.replace(/[\u0000-\u001f\u007f]/g, '').slice(0, 120);
       if (!name) continue;
-      var stores = [], seen = {};
-      var src = Array.isArray(c.stores) ? c.stores : [];
-      for (var j = 0; j < src.length; j++) {
-        var s = src[j];
-        var url = s && !seen[s.store] && safeUrl(s.store, s.url);
-        if (url && typeof s.cents === 'number' && s.cents >= 1 && s.cents <= 10000000 && Math.floor(s.cents) === s.cents) {
-          seen[s.store] = 1;
-          stores.push({ store: s.store, cents: s.cents, url: url });
-        }
-      }
+      var stores = cleanStores(c.stores);
       if (!stores.length) continue;
-      stores.sort(function (a, b) { return ORDER.indexOf(a.store) - ORDER.indexOf(b.store); });
       var dash = c.code.indexOf('-');
       out.push({
         code: c.code,
@@ -372,9 +443,10 @@
     frame.appendChild(msg);
     root.appendChild(frame);
 
-    var cards = [];
+    var cards = [], sealedItems = [];
     var shown = 0, current = [], curStore = '';
     var q, colour, set, store, rarity, sort, count, clear, grid, box;
+    var sGrid = null, sCur = [], sShown = 0, sStore = '', sBox = null;
 
     function sel(label, first) {
       var n = el('select'); n.setAttribute('aria-label', label);
@@ -439,8 +511,17 @@
       img.src = artUrl(urls[0]);
       return img;
     }
+    function sealedImg(c, lazy) {
+      var img = el('img'); img.decoding = 'async'; img.alt = '';
+      if (lazy) img.loading = 'lazy';
+      img.referrerPolicy = 'no-referrer';
+      img.onerror = function () { if (img.parentNode) img.parentNode.removeChild(img); };
+      img.src = SEALED_ART + c.pid + '.jpg';
+      return img;
+    }
     function artBox(c, lazy) {
-      var art = el('div', 'tpci-art');
+      var art = el('div', 'tpci-art' + (c.sealed ? ' tpci-art-s' : ''));
+      if (c.sealed) { art.appendChild(el('span', 'tpci-ph', KINDS[c.kind])); art.appendChild(sealedImg(c, lazy)); return art; }
       if (c.colour) art.style.setProperty('--c', COLOURS[c.colour]);
       art.appendChild(artImg(c.code, lazy));
       return art;
@@ -466,7 +547,18 @@
       });
       return by;
     }
+    function sealedInfo(c) {
+      var info = el('div', 'tpci-in');
+      var cd = el('div', 'tpci-cd');
+      if (c.set) cd.appendChild(el('span', null, c.set));
+      cd.appendChild(el('span', 'tpci-r tpci-k', KINDS[c.kind]));
+      info.appendChild(cd);
+      info.appendChild(el('p', 'tpci-nm', c.name));
+      if (c.grams != null) info.appendChild(el('span', 'tpci-w', gramsText(c.grams)));
+      return info;
+    }
     function cardInfo(c, st) {
+      if (c.sealed) return sealedInfo(c);
       var info = el('div', 'tpci-in');
       var cd = el('div', 'tpci-cd');
       cd.appendChild(el('span', null, c.code));
@@ -482,7 +574,7 @@
       var t = el('article', 'tpci-t');
       t.tabIndex = 0; t.setAttribute('role', 'button');
       t.setAttribute('aria-haspopup', 'dialog');
-      t.setAttribute('aria-label', 'Enlarge ' + c.name + ', ' + c.code);
+      t.setAttribute('aria-label', 'Enlarge ' + c.name + ', ' + (c.sealed ? (c.grams != null ? gramsText(c.grams) : KINDS[c.kind]) : c.code));
       t.appendChild(artBox(c, true)); t.appendChild(cardInfo(c, st)); t.appendChild(buyLinks(c, st));
       t.__c = c;
       return t;
@@ -499,15 +591,15 @@
       document.documentElement.classList.remove('tpci-lock');
       if (z.from && z.from.focus && document.body.contains(z.from)) { try { z.from.focus({ preventScroll: true }); } catch (e) { z.from.focus(); } }
     }
-    function openZoom(c, from) {
+    function openZoom(c, from, st) {
       closeZoom();
       var ov = el('div', 'tpci-ov');
       var md = el('div', 'tpci-md');
       md.setAttribute('role', 'dialog'); md.setAttribute('aria-modal', 'true'); md.setAttribute('aria-label', c.name);
       var x = el('button', 'tpci-x', '\u00d7'); x.type = 'button'; x.setAttribute('aria-label', 'Close');
       md.appendChild(artBox(c, false));
-      var side = cardInfo(c, curStore);
-      side.appendChild(buyLinks(c, curStore));
+      var side = cardInfo(c, st);
+      side.appendChild(buyLinks(c, st));
       md.appendChild(side); md.appendChild(x);
       ov.appendChild(md);
       var key = function (e) {
@@ -533,12 +625,13 @@
       if (!n || !n.closest) return;
       if (n.closest('a')) return;
       var t = n.closest('.tpci-t');
-      if (!t || !t.__c || !grid.contains(t)) return;
+      var inSealed = !!(t && sGrid && sGrid.contains(t));
+      if (!t || !t.__c || (!inSealed && !grid.contains(t))) return;
       if (e.type === 'keydown') {
         if (n !== t || (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar')) return;
         e.preventDefault();
       }
-      openZoom(t.__c, t);
+      openZoom(t.__c, t, inSealed ? sStore : curStore);
     }
 
     // The list scrolls inside its own box; the next cards are added as the reader nears the bottom.
@@ -567,12 +660,43 @@
       msg.textContent = 'No card matches. Clear the search to see everything.';
     }
 
+    var cardsPane = null, sealedPane = null, tabCards = null, tabSealed = null, heading = h;
+
     function show(data) {
       cards = clean(data);
+      sealedItems = cleanSealed(data);
       announce(cards);
       stamp.textContent = ago(data && data.at);
-      if (!cards.length) { msg.textContent = 'Nothing is listed right now. Check back soon.'; return; }
+      if (!cards.length && !sealedItems.length) { msg.textContent = 'Nothing is listed right now. Check back soon.'; return; }
+      if (cards.length) buildCards();
+      else msg.className = 'tpci-msg tpci-hide';
+      if (sealedItems.length) buildSealed();
+      if (cards.length && sealedItems.length) buildTabs();
+      else if (sealedItems.length) heading.textContent = 'Sealed product in stock';
+    }
 
+    // Cards and sealed product share one frame; the reader switches between them. With only one of them in stock there are no tabs.
+    function buildTabs() {
+      var tabs = el('div', 'tpci-tabs');
+      tabCards = el('button', 'tpci-tab', 'Cards (' + cards.length + ')'); tabCards.type = 'button';
+      tabSealed = el('button', 'tpci-tab', 'Sealed product (' + sealedItems.length + ')'); tabSealed.type = 'button';
+      tabs.appendChild(tabCards); tabs.appendChild(tabSealed);
+      frame.insertBefore(tabs, cardsPane);
+      var pick = function (sealedOn) {
+        closeZoom();
+        cardsPane.className = 'tpci-pane' + (sealedOn ? ' tpci-hide' : '');
+        sealedPane.className = 'tpci-pane' + (sealedOn ? '' : ' tpci-hide');
+        tabCards.setAttribute('aria-pressed', sealedOn ? 'false' : 'true');
+        tabSealed.setAttribute('aria-pressed', sealedOn ? 'true' : 'false');
+        heading.textContent = sealedOn ? 'Sealed product in stock' : 'Cards in stock';
+      };
+      tabCards.addEventListener('click', function () { pick(false); });
+      tabSealed.addEventListener('click', function () { pick(true); });
+      pick(false);
+    }
+
+    function buildCards() {
+      cardsPane = el('div', 'tpci-pane');
       var ct = el('div', 'tpci-ct');
       q = el('input'); q.type = 'search'; q.placeholder = 'Search name or card number';
       q.setAttribute('aria-label', 'Search by card name or card number');
@@ -614,9 +738,10 @@
       box.appendChild(grid);
       grid.addEventListener('click', onTile); grid.addEventListener('keydown', onTile);
 
-      if (gd.children.length > 1) frame.insertBefore(gd, msg);
-      frame.insertBefore(ct, msg); frame.insertBefore(bar, msg); frame.insertBefore(box, msg);
-      frame.appendChild(el('p', 'tpci-fn', 'Prices differ between stores mostly because each platform has its own fees and shipping costs. Please use whichever platform you are comfortable with!'));
+      if (gd.children.length > 1) cardsPane.appendChild(gd);
+      cardsPane.appendChild(ct); cardsPane.appendChild(bar); cardsPane.appendChild(box); cardsPane.appendChild(msg);
+      cardsPane.appendChild(el('p', 'tpci-fn', 'Prices differ between stores mostly because each platform has its own fees and shipping costs. Please use whichever platform you are comfortable with!'));
+      frame.appendChild(cardsPane);
 
       var reset = function () { render(); };
       q.addEventListener('input', reset);
@@ -627,6 +752,112 @@
       });
       box.addEventListener('scroll', function () { if (shown < current.length) fill(); });
       render();
+    }
+
+    // ---- sealed product: search, set, type, weight, store and a sort menu ----
+    function sealedSorter(mode, st) {
+      return function (a, b) {
+        var r = 0;
+        var tail = function () { return cmpText(a.name, b.name) || (a.grams == null ? 1e9 : a.grams) - (b.grams == null ? 1e9 : b.grams) || priceOf(a, st) - priceOf(b, st); };
+        var bySet = (a.set ? 0 : 1) - (b.set ? 0 : 1) || cmpText(a.set, b.set);
+        var byKind = KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind);
+        if (mode === 'set') r = bySet || byKind;
+        else if (mode === 'type') r = byKind || bySet;
+        else if (mode === 'light' || mode === 'heavy') {
+          // packs with no weight always go last, whichever way the weights run
+          if (a.grams == null || b.grams == null) r = (a.grams == null) - (b.grams == null);
+          else r = mode === 'light' ? a.grams - b.grams : b.grams - a.grams;
+        }
+        else if (mode === 'store') r = cheapStore(a, st) - cheapStore(b, st);
+        else if (mode === 'high') r = priceOf(b, st) - priceOf(a, st);
+        else if (mode === 'low') r = priceOf(a, st) - priceOf(b, st);
+        return r || bySet || byKind || tail() || cmp(a.code, b.code);
+      };
+    }
+
+    function buildSealed() {
+      sealedPane = el('div', 'tpci-pane');
+      var sq, sset, stype, sweight = null, sstore, ssort, scount, sclear, smsg;
+      var steps = weightSteps(sealedItems);
+      var anyUnweighed = sealedItems.some(function (x) { return x.grams == null; });
+
+      var ct = el('div', 'tpci-ct');
+      sq = el('input'); sq.type = 'search'; sq.placeholder = 'Search sealed product';
+      sq.setAttribute('aria-label', 'Search sealed product by name');
+      sq.setAttribute('autocomplete', 'off');
+      sset = sel('Set', 'All sets');
+      var sets = {};
+      sealedItems.forEach(function (c) { if (c.set) sets[c.set] = 1; });
+      Object.keys(sets).sort(cmpText).forEach(function (x) { opt(sset, x, x); });
+      stype = sel('Type', 'All types');
+      var kinds = {};
+      sealedItems.forEach(function (c) { kinds[c.kind] = 1; });
+      KIND_ORDER.filter(function (k) { return kinds[k]; }).forEach(function (k) { opt(stype, k, KINDS[k]); });
+      if (steps.length) {
+        sweight = sel('Weight (approximate)', 'Any weight');
+        steps.forEach(function (st, i) { opt(sweight, String(i), st.label); });
+        if (anyUnweighed) opt(sweight, 'none', 'Weight not listed');
+      }
+      sstore = sel('Store', 'All stores');
+      ORDER.forEach(function (x) { opt(sstore, x, STORES[x][0]); });
+      ssort = sel('Sort by');
+      SEALED_SORTS.filter(function (x) { return steps.length || (x[0] !== 'light' && x[0] !== 'heavy'); }).forEach(function (x) { opt(ssort, x[0], 'Sort: ' + x[1]); });
+      [sq, sset, stype, sweight, sstore, ssort].forEach(function (n) { if (n) ct.appendChild(n); });
+
+      var bar = el('div', 'tpci-bar');
+      scount = el('span', null, ''); scount.setAttribute('aria-live', 'polite');
+      sclear = el('button', 'tpci-clr', 'Clear filters'); sclear.type = 'button';
+      bar.appendChild(scount); bar.appendChild(sclear);
+      sGrid = el('div', 'tpci-gr');
+      sBox = el('div', 'tpci-sc'); sBox.tabIndex = 0; sBox.setAttribute('role', 'region'); sBox.setAttribute('aria-label', 'Sealed product in stock');
+      sBox.appendChild(sGrid);
+      sGrid.addEventListener('click', onTile); sGrid.addEventListener('keydown', onTile);
+      smsg = el('p', 'tpci-msg tpci-hide', 'No sealed product matches. Clear the filters to see everything.');
+      smsg.setAttribute('role', 'status');
+      sealedPane.appendChild(ct); sealedPane.appendChild(bar); sealedPane.appendChild(sBox); sealedPane.appendChild(smsg);
+      sealedPane.appendChild(el('p', 'tpci-fn', 'Weights are approximate: each pack is weighed on a home scale, so a reading can be a little off. Prices differ between stores mostly because each platform has its own fees and shipping costs.'));
+      if (cards.length) sealedPane.className = 'tpci-pane tpci-hide';
+      frame.appendChild(sealedPane);
+
+      function sFill() {
+        var guard = 0;
+        do {
+          sCur.slice(sShown, sShown + PAGE).forEach(function (c) { sGrid.appendChild(tile(c, sStore)); });
+          sShown = Math.min(sCur.length, sShown + PAGE);
+        } while (sShown < sCur.length && sBox.scrollHeight - sBox.scrollTop - sBox.clientHeight < 600 && ++guard < 50);
+      }
+      function sRender() {
+        var text = sq.value.trim().toLowerCase();
+        var tokens = text.split(/\s+/).filter(Boolean);
+        var se = sset.value, ty = stype.value, st = sstore.value, wv = sweight ? sweight.value : '';
+        var step = wv && wv !== 'none' ? steps[Number(wv)] : null;
+        var list = sealedItems.filter(function (c) {
+          if (se && c.set !== se) return false;
+          if (ty && c.kind !== ty) return false;
+          if (st && !c.stores.some(function (x) { return x.store === st; })) return false;
+          if (wv === 'none' && c.grams != null) return false;
+          if (step && !(c.grams != null && c.grams >= step.from && c.grams < step.to)) return false;
+          if (!tokens.length) return true;
+          var hay = c.lname + ' ' + KINDS[c.kind].toLowerCase() + ' ' + c.set.toLowerCase();
+          return tokens.every(function (t) { return hay.indexOf(t) >= 0; });
+        });
+        list.sort(sealedSorter(ssort.value, st));
+        scount.textContent = list.length + ' of ' + sealedItems.length + ' sealed products';
+        sclear.className = 'tpci-clr' + (text || se || ty || st || wv ? '' : ' tpci-hide');
+        while (sGrid.firstChild) sGrid.removeChild(sGrid.firstChild);
+        sCur = list; sStore = st; sShown = 0; sBox.scrollTop = 0;
+        sFill();
+        sBox.className = 'tpci-sc' + (list.length ? '' : ' tpci-hide');
+        smsg.className = 'tpci-msg' + (list.length ? ' tpci-hide' : '');
+      }
+      sq.addEventListener('input', sRender);
+      [sset, stype, sweight, sstore, ssort].forEach(function (n) { if (n) n.addEventListener('change', sRender); });
+      sclear.addEventListener('click', function () {
+        sq.value = ''; sset.value = ''; stype.value = ''; if (sweight) sweight.value = ''; sstore.value = '';
+        sRender(); sq.focus();
+      });
+      sBox.addEventListener('scroll', function () { if (sShown < sCur.length) sFill(); });
+      sRender();
     }
 
     // Tell the other embeds on the page (the Marketplaces tiles) which rarities each store has right now.
