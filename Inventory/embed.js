@@ -76,6 +76,7 @@
 .tpci-hd{position:absolute;top:0;left:18px;transform:translateY(-50%);margin:0;padding:0 12px;background:var(--bg,#14110c);font-family:'EB Garamond',Georgia,serif;font-weight:600;font-size:22px;line-height:1.2;color:var(--g)}
 .tpci-st{margin:0 0 14px;font-size:12px;color:var(--mu)}
 .tpci-ct{display:grid;grid-template-columns:minmax(0,2.2fr) repeat(4,minmax(0,1fr)) minmax(0,1.4fr);gap:8px}
+.tpci-ct-5{grid-template-columns:minmax(0,2.2fr) repeat(3,minmax(0,1fr)) minmax(0,1.4fr)}
 .tpci-ct input,.tpci-ct select{width:100%;min-width:0;height:42px;padding:0 12px;background:var(--pn);color:var(--tx);border:1px solid rgba(201,169,97,.45);border-radius:6px;font:400 16px Inter,system-ui,sans-serif}
 .tpci-ct select{padding:0 4px 0 8px}
 .tpci-ct input::placeholder{color:var(--mu);opacity:1}
@@ -446,6 +447,7 @@
     var cards = [], sealedItems = [];
     var shown = 0, current = [], curStore = '';
     var q, colour, set, store, rarity, sort, count, clear, grid, box;
+    var sealedRender = null, sealedDone = false;
     var sGrid = null, sCur = [], sShown = 0, sStore = '', sBox = null;
 
     function sel(label, first) {
@@ -689,6 +691,7 @@
         tabCards.setAttribute('aria-pressed', sealedOn ? 'false' : 'true');
         tabSealed.setAttribute('aria-pressed', sealedOn ? 'true' : 'false');
         heading.textContent = sealedOn ? 'Sealed product in stock' : 'Cards in stock';
+        if (sealedOn && !sealedDone && sealedRender) { sealedDone = true; sealedRender(); }
       };
       tabCards.addEventListener('click', function () { pick(false); });
       tabSealed.addEventListener('click', function () { pick(true); });
@@ -781,7 +784,7 @@
       var steps = weightSteps(sealedItems);
       var anyUnweighed = sealedItems.some(function (x) { return x.grams == null; });
 
-      var ct = el('div', 'tpci-ct');
+      var ct = el('div', 'tpci-ct' + (steps.length ? '' : ' tpci-ct-5'));
       sq = el('input'); sq.type = 'search'; sq.placeholder = 'Search sealed product';
       sq.setAttribute('aria-label', 'Search sealed product by name');
       sq.setAttribute('autocomplete', 'off');
@@ -835,7 +838,7 @@
           if (se && c.set !== se) return false;
           if (ty && c.kind !== ty) return false;
           if (st && !c.stores.some(function (x) { return x.store === st; })) return false;
-          if (wv === 'none' && c.grams != null) return false;
+          if (wv === 'none' && (c.grams != null || (c.kind !== 'pack' && c.kind !== 'promo'))) return false;
           if (step && !(c.grams != null && c.grams >= step.from && c.grams < step.to)) return false;
           if (!tokens.length) return true;
           var hay = c.lname + ' ' + KINDS[c.kind].toLowerCase() + ' ' + c.set.toLowerCase();
@@ -857,7 +860,9 @@
         sRender(); sq.focus();
       });
       sBox.addEventListener('scroll', function () { if (sShown < sCur.length) sFill(); });
-      sRender();
+      // The tab is built when first shown, so a hidden pane never builds its tiles.
+      sealedRender = sRender;
+      if (!cards.length) sRender();
     }
 
     // Tell the other embeds on the page (the Marketplaces tiles) which rarities each store has right now.
