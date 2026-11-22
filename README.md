@@ -22,7 +22,7 @@ Store tiles with platform logos and rarity chips, in two rows (Mercari, eBay; th
 
 ## Inventory
 
-A searchable card list: "Cards in stock" with a "Checked N min ago" note, a search box (card name or card number, so `075` or `ebp01 075` finds EBP01-075), filters for color, set, store and rarity, a sort menu (card number, name, color, set, rarity, store, price high to low or low to high), a results box that scrolls on its own and adds cards as you near the bottom (no "Show more" button), a footnote on why prices differ between stores, and one button per store on each card with the platform logo and price. There is no checkout: each button opens that store's own page in a new tab. Card art comes from the official card art cache; if a picture does not load the card shows a plain frame.
+A searchable card list: "Cards in stock" with a "Checked N min ago" note, a search box (card name or card number, so `075` or `ebp01 075` finds EBP01-075), filters for color, set, store and rarity, a sort menu (card number, name, color, set, rarity, store, price high to low or low to high), a results box that scrolls on its own and adds cards as you near the bottom (no "Show more" button), a footnote on why prices differ between stores, a **Sealed product** tab when sealed product is in stock (see Sealed product below), and one button per store on each card with the platform logo and price. There is no checkout: each button opens that store's own page in a new tab. Card art comes from the official card art cache; if a picture does not load the card shows a plain frame.
 
 ```html
 <div id="tpc-inventory" data-src="LIST_ADDRESS"></div>
@@ -30,6 +30,10 @@ A searchable card list: "Cards in stock" with a "Checked N min ago" note, a sear
 ```
 
 The list address is never stored in this repo: it is read from `data-src` on the mount div (or on the script tag) and must be `https://`. The preview page uses the sample list `Inventory/sample.json`, which has made-up prices. The list is JSON: `{"v":1,"at":<ms epoch>,"cards":[{"code","name","rarity","colour","set","stores":[{"store","cents","url"}]}]}` with stores `ebay`, `mercari`, `tcgplayer`, `cardtrader`, `cardnexus`; store links are only shown when they point at that store's own domain. Set `--bg` at the top of the CSS to your Carrd page background.
+
+### Sealed product
+
+When the list has a `sealed` part (boxes, trial decks, booster packs and promo packs in stock), the Inventory embed gets two tabs, **Cards** and **Sealed product**; with only one of them in stock there are no tabs. The sealed tab has the same look as the cards: a search box (name, type or set), filters for **set** (the human set code, EBP01, ETD01), **type** (booster box, trial deck, booster pack, promo pack), **weight** and **store**, a sort menu (set, type, weight light to heavy or heavy to light, name, store, price) and the same store buttons and zoom view. A weighed pack shows its weight as "approx. 15.32 g"; the weight filter has whole-gram steps built from the weights in stock (at most six) and "Weight not listed", and the weight filter and sorts are left out when no weight is listed. Products with no weight sort after the weighed ones. The picture is the product picture on TCGplayer's own image host (`SEALED_ART` at the top of `Inventory/embed.js`); when it does not load the tile keeps a plain frame with the product type in words. The list format: `"sealed":[{"product":<TCGplayer product number>,"name","kind":"box"|"deck"|"pack"|"promo","set":"EBP01","grams":15.32,"stores":[{"store","cents","url"}]}]` (`grams` only on a weighed pack). The sample list has made-up sealed products.
 
 ### Live rarities on the Marketplaces tiles
 
